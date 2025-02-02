@@ -6,9 +6,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 
 public class elevator extends SubsystemBase {
@@ -48,10 +49,23 @@ public class elevator extends SubsystemBase {
     public void periodic() {
       io.updateInputs(inputs);
 
-      // Optionally log or display on SmartDashboard for debugging
-      System.out.println("Elevator Position: " + inputs.position + " meters");
-      System.out.println("Elevator Velocity: " + inputs.velocity + " m/s");
+      // Use this to display logging to terminal for debugging
+
+      // *** please note that this will spam the crap out of the terminal so its not really super useful but here in case you need it ***
+
+      //System.out.println("Elevator Position: " + inputs.position + " meters");
+      //System.out.println("Elevator Velocity: " + inputs.velocity + " m/s");
+ 
+    // Record data to the log file instead of terminal. There are a ton of spam that will be recorded to the log file so be careful with this. The reason is in teleopPeriodic() we are calling get height and position method every 20ms. Meaning you will see
+    // a ton of data in the log file for the elevator subsystem.
+        Logger.recordOutput("Elevator/Position", inputs.position);
+        Logger.recordOutput("Elevator/Velocity", inputs.velocity);
   }
+
+    // Forward runVolts to the correct I/O implementation
+    public void runVolts(double volts) {
+        io.runVolts(volts);
+    }
 
     public void setTargetHeight(double targetPositionMeters) {
        io.runSetpoint(targetPositionMeters);

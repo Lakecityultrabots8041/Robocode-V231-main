@@ -36,7 +36,7 @@ public class ElevatorIOReal implements ElevatorIO {
     public void runSetpoint(double targetPositionMeters) {
         // Convert meters to sensor units if necessary (assuming 1:1 for now)
         double targetPositionUnits = targetPositionMeters / ENCODER_TO_METERS;
-        MotionMagicDutyCycle control = new MotionMagicDutyCycle(targetPositionMeters);
+        MotionMagicDutyCycle control = new MotionMagicDutyCycle(targetPositionUnits);
         leftMotor.setControl(control);
     }
 
