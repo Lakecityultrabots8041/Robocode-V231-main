@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Blue part 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 6"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
