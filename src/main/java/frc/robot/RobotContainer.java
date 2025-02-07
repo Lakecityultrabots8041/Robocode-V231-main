@@ -20,8 +20,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+
+//This imports the elevator subsystem and the elevator command
 import frc.robot.subsystems.elevator.elevator;
-import frc.robot.commands.*;
+// This imports the arm command
+import frc.robot.commands.*; // This Imports all commands from the folder commands
+/* Probably Smart to only set above to the exact command wanting to import as this isn't python and java can be dumb */
+
+import frc.robot.subsystems.arm.Arm; // This imports the arm subsystem
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -30,24 +36,38 @@ public class RobotContainer {
 
     // Setup for elevator subsystem
      private final elevator elevator = new elevator();
+
+    // Setup for controller for all systems(arm, elevator, drivetrain, ect.)
      private final CommandXboxController controller = new CommandXboxController(0);
 
+    // Setup for arm subsystem
+    private final Arm arm = new Arm();
+    // Here, the arm will run at 50% speed. Adjust the value as needed.
+    private final ArmCommand ArmCommand = new ArmCommand(arm, 0.5); // <----- 50% speed Change here if needed
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
+
+    /* Swerve Drivetrain bindings and things */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors **IMPORTANT**
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
-
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
 
     public RobotContainer() {
         configureBindings();
+         // ── Teleop Option ──
+        // Bind the ArmCommand to the controller's X button so that the command runs while the button is held.
+
+        controller.x().whileTrue(ArmCommand); //<---- Change this to whatever button you wish to use
+
+        // Alternatively, if you prefer the arm command to run continuously (default command),
+        // you can set it as the default command for the Arm subsystem:
+        // arm.setDefaultCommand(armCommand);
     }
 
 
@@ -68,16 +88,16 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed / 2) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed / 2) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate / 3) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 2) // Drive forward with negative Y (forward)
+                    .withVelocityY(-controller.getLeftX() * MaxSpeed / 2) // Drive left with negative X (left)
+                    .withRotationalRate(-controller.getRightX() * MaxAngularRate / 3) // Drive counterclockwise with negative X (left)
             )
         );
         
         // changed the value rate above
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        controller.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        controller.b().whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))
         ));
 
 
@@ -89,20 +109,24 @@ public class RobotContainer {
          .whileTrue(new MoveElevator(elevator, 20000));  // Raise elevator (example target)
 
 
+        // Bind the ArmCommand to a button press
+        controller.x().whileTrue(ArmCommand);
+
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        controller.back().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        controller.start().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        controller.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return ArmCommand.withTimeout(3) //Change this when pathplanner is created, as this will run for only 3 seconds at the start of switching on Auton
+        .andThen(Commands.print("Autonomous complete"));
     }
 }

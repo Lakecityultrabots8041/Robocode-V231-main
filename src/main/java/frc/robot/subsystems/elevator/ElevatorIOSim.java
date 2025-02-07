@@ -8,14 +8,14 @@ import edu.wpi.first.math.system.plant.DCMotor;
 
 public class ElevatorIOSim implements ElevatorIO {
     private final ElevatorSim sim = new ElevatorSim(
-        DCMotor.getFalcon500(2),  // Use the Falcon 500 simulation model
-        4.0,                       // Gear ratio (adjust to match your setup)
-        5.0,                       // Carriage mass in kg
-        0.05,                      // Pulley radius in meters
-        0.0,                       // Minimum height
-        1.32,                      // Maximum height (52 inches)
-        true,                      // Simulate gravity
-        0.02                       // Measurement noise standard deviation (tune as needed)
+        DCMotor.getFalcon500(2),  // get the Falcon 500 gearbox and number of motors
+        4.0,               // gear ratio (adjust here if you change the gearbox)
+        5.0,         // carriage mass in kg
+        0.05,     // pulley radius in meters
+        0.0,      // minimum height
+        1.32,     // maximum height (52 inches)
+        true,     // simulate gravity is reqiured so it can apply torgue to the motor
+        0.02 // measurement noise standard deviation (tune as needed)
     );
     private final PIDController controller = new PIDController(0.1, 0.0, 0.0);
     private final ElevatorFeedforward ff = new ElevatorFeedforward(0.2, 0.05, 0.0);

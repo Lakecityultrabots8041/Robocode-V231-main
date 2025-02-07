@@ -30,8 +30,6 @@ public class elevator extends SubsystemBase {
 
 //  private static final int allowableError = 500;  // Tolerable error in sensor units
 
-
-
   public elevator() {
       if (RobotBase.isSimulation()) {
             io = new ElevatorIOSim();  // Use simulation I/O during simulation
