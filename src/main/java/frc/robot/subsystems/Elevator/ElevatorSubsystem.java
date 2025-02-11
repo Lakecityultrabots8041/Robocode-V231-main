@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -37,14 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor.setControl(percentRequest.withOutput(voltage));
     }
 
-    //public boolean atPosition() {
-        // FIXME before implementing this method, we need to add a getPosition() method to the TalonFX class
-            //double currentPos = motor.getPosition().getValue();
-                //return Math.abs(currentPos - currentState.position) < ElevatorConfigs.POSITION_TOLERANCE;
-                //return false;
-
-    //}
-
+  
     public ElevatorState getCurrentState() {
         return currentState;
     }
@@ -59,22 +52,3 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 }
 
-/* TODO Add to Robot Container at a later Date */
-
-//     private void configureBindings() {
-//         // Manual control on left joystick Y-axis
-//         elevator.setDefaultCommand(
-//             new ManualElevatorControl(
-//                 elevator, 
-//                 () -> -operatorController.getLeftY()
-//             )
-//         );
-
-//         // Preset positions on buttons
-//         operatorController.a().onTrue(new SetElevatorPosition(elevator, ElevatorState.START));
-//         operatorController.b().onTrue(new SetElevatorPosition(elevator, ElevatorState.L1));
-//         operatorController.x().onTrue(new SetElevatorPosition(elevator, ElevatorState.L2));
-//         operatorController.y().onTrue(new SetElevatorPosition(elevator, ElevatorState.L3));
-//         operatorController.rightBumper().onTrue(new SetElevatorPosition(elevator, ElevatorState.L4));
-//     }
-// } 

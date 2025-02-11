@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.elevator;
 
 public enum ElevatorState {
     START(ElevatorConfigs.Positions.START),

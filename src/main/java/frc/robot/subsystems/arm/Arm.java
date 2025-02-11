@@ -8,13 +8,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
 
-    private final WPI_VictorSPX leftArmMotor;
-    private final WPI_VictorSPX rightArmMotor;
+    private final WPI_VictorSPX leftArmMotor; //updated to WPI_VictorSPX
+    private final WPI_VictorSPX rightArmMotor; //updated to WPI_VictorSPX
 
     public Arm() {
         // Initialize motors with correct CAN IDs
-        leftArmMotor = new WPI_VictorSPX(4);
-        rightArmMotor = new WPI_VictorSPX(2);
+        leftArmMotor = new WPI_VictorSPX(4); //verify CAN ID
+        rightArmMotor = new WPI_VictorSPX(2); //verify CAN ID
         configureMotors();
     }
 

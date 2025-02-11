@@ -126,7 +126,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return ArmCommand.withTimeout(3) //Change this when pathplanner is created, as this will run for only 3 seconds at the start of switching on Auton
+        return ArmCommand.withTimeout(3) //Change this when we get pathplanner setup
         .andThen(Commands.print("Autonomous complete"));
     }
 }
