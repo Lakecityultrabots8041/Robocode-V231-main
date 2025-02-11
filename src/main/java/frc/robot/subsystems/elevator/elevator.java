@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ElevatorConstants;
 
 
 
@@ -20,25 +21,16 @@ public class elevator extends SubsystemBase {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
 
-    // Motion Magic constants (these will need tuning)
-    private static final double kF = 0.05; // This is feedforward, which helps counter gravity/robot weight. Adjust based on elevator performance.
-    private static final double kP = 0.1; // Provides initial correction. Too high can lead to oscillations.
-    private static final double kI = 0.0; // Fine to start with, avoids integral wind-up.
-    private static final double kD = 0.0; // Don't Touch unless it overshoots like crazy
-    private static final int cruiseVelocity = 15000;  // Sensor units per 100ms
-    private static final int acceleration = 6000;  // Sensor units per 100ms^2
-
-//  private static final int allowableError = 500;  // Tolerable error in sensor units
-
   public elevator() {
       if (RobotBase.isSimulation()) {
             io = new ElevatorIOSim();  // Use simulation I/O during simulation
         } else {
             io = new ElevatorIOReal();  // Use real hardware I/O during deployment
         }
+ 
     // Initialize the elevator subsystem
-    leftMotor = new TalonFX(5, "rio");  //ID 5 for left motor
-    rightMotor = new TalonFX(6, "rio"); //ID 6 for right motor
+    leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, "rio");
+    rightMotor = new TalonFX(ElevatorConstants.RIGHT_MOTOR_ID, "rio");
 
     configureMotors();
   }
@@ -85,13 +77,13 @@ public class elevator extends SubsystemBase {
         feedbackConfig.SensorToMechanismRatio = 1.0;  // Assuming 1:1, adjust if necessary
         leftMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-        // Set Motion Magic PID and acceleration configs
-        leftMotorConfig.Slot0.kP = kP;
-        leftMotorConfig.Slot0.kI = kI;
-        leftMotorConfig.Slot0.kD = kD;
-        leftMotorConfig.Slot0.kV = kF;
-        leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
-        leftMotorConfig.MotionMagic.MotionMagicAcceleration = acceleration;
+        // Set Motion Magic PID and acceleration configs from constants folder
+        leftMotorConfig.Slot0.kP = ElevatorConstants.kP;
+        leftMotorConfig.Slot0.kI = ElevatorConstants.kI;
+        leftMotorConfig.Slot0.kD = ElevatorConstants.kD;
+        leftMotorConfig.Slot0.kV = ElevatorConstants.kF;
+        leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
+        leftMotorConfig.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
 
         // Apply configuration to motors
         leftMotor.getConfigurator().apply(leftMotorConfig);
@@ -107,14 +99,6 @@ public class elevator extends SubsystemBase {
         resetEncoders();
     }
 
-    ///public void setTargetHeight(double targetPosition) {
-        ///MotionMagicDutyCycle control = new MotionMagicDutyCycle(targetPosition);
-        //leftMotor.setControl(control);
-   // }
-
-    //public void stop() {
-        //leftMotor.set(0);
-    //}
 
     public double getCurrentHeight() {
         return leftMotor.getPosition().getValueAsDouble();

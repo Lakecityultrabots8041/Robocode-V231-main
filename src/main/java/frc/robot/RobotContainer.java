@@ -5,6 +5,9 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import java.util.List;
+import edu.wpi.first.math.geometry.Pose2d;
+
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -17,15 +20,23 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
+
+/* SMART DASHBOARD IMPORTS */
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+/* PATH PLANNER IMPORTS */
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.commands.FollowPathCommand;
+
+
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-
-//This imports the elevator subsystem and the elevator command
-import frc.robot.subsystems.elevator.elevator;
-// This imports the arm command
+import frc.robot.subsystems.elevator.elevator;  //This imports the elevator subsystem and the elevator command
 import frc.robot.commands.*; // This Imports all commands from the folder commands
-/* Probably Smart to only set above to the exact command wanting to import as this isn't python and java can be dumb */
+import frc.robot.constants.ElevatorConstants;
 
 import frc.robot.subsystems.arm.Arm; // This imports the arm subsystem
 
@@ -39,6 +50,9 @@ public class RobotContainer {
 
     // Setup for controller for all systems(arm, elevator, drivetrain, ect.)
      private final CommandXboxController controller = new CommandXboxController(0);
+
+     /* SET UP FOR PATH PLANNER */
+     private final SendableChooser<Command> autonChooser = new SendableChooser<>();
 
     // Setup for arm subsystem
     private final Arm arm = new Arm();
@@ -68,8 +82,30 @@ public class RobotContainer {
         // Alternatively, if you prefer the arm command to run continuously (default command),
         // you can set it as the default command for the Arm subsystem:
         // arm.setDefaultCommand(armCommand);
-    }
 
+        configureAuto();
+    }
+    private void configureAuto() {
+        // Load Paths from PathPlanner
+        Command centerBlueAuto = AutoBuilder.buildAuto("Center Blue Part 1"); // Name matches JSON file
+        Command part2auto = AutoBuilder.buildAuto("Part 2"); // Rename in pathplanner and here to matach above
+        Command part3auto = AutoBuilder.buildAuto("Part 3"); // Rename in pathplanner and here to matach above
+        Command part4auto = AutoBuilder.buildAuto("Part 4"); // Rename in pathplanner and here to matach above
+        Command part5auto = AutoBuilder.buildAuto("Part 5"); // Rename in pathplanner and here to matach above
+        Command part6auto = AutoBuilder.buildAuto("Part 6"); // Rename in pathplanner and here to matach above
+    // Add Autonomous Commands to the SendableChooser
+        autonChooser.setDefaultOption("Center Blue Auto", centerBlueAuto);
+        autonChooser.addOption("Another Auto", part2auto);
+        autonChooser.addOption("Another Auto", part3auto);
+        autonChooser.addOption("Another Auto", part4auto);
+        autonChooser.addOption("Another Auto", part5auto);
+        autonChooser.addOption("Another Auto", part6auto);
+
+        // Display the auton chooser on SmartDashboard
+        SmartDashboard.putData("Autonomous Mode", autonChooser);
+        
+     }
+    
 
     public elevator getElevator() {
         return elevator;
@@ -84,44 +120,56 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
 
 
-        //drive train stuff
+        // ---- DRIVETRAIN BINDINGS ----
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 2) // Drive forward with negative Y (forward)
                     .withVelocityY(-controller.getLeftX() * MaxSpeed / 2) // Drive left with negative X (left)
                     .withRotationalRate(-controller.getRightX() * MaxAngularRate / 3) // Drive counterclockwise with negative X (left)
             )
         );
-        
-        // changed the value rate above
+
         controller.a().whileTrue(drivetrain.applyRequest(() -> brake));
         controller.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))
         ));
 
+        /* -----------ELEVATOR BINDINGS -------------- */
 
-         // Elevator control with triggers
-         new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-         .whileTrue(new MoveElevator(elevator, 0));  // Lower elevator
+        controller.getLeftTriggerAxis();
+        new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
+            .onTrue(new AdjustElevator(elevator, -0.05)); 
+
+        new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
+            .onTrue(new AdjustElevator(elevator, 0.05));   // Raise elevator by 0.05 m
+
+
+         /* new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
+         .whileTrue(new MoveElevator(elevator, 0));  // Lower elevator with Left Trigger
 
          new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
-         .whileTrue(new MoveElevator(elevator, 20000));  // Raise elevator (example target)
-
-
-        // Bind the ArmCommand to a button press
+         .whileTrue(new MoveElevator(elevator, 20000));  // Raise elevator with Right Trigger */
+        
+         // Bind D-pad directions to preset elevator positions:
+        controller.povUp().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_4));
+        controller.povRight().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_3));
+        controller.povLeft().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_2));
+        controller.povDown().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_1));
+    
+         
+        // ---- ARM BINDINGS ----
+        // Bind the ArmCommand to the X button
         controller.x().whileTrue(ArmCommand);
 
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
+         // ---- SYSID / FIELD-CENTRIC BINDINGS ----
         controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         controller.back().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         controller.start().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+ 
 
         // reset the field-centric heading on left bumper press
         controller.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
