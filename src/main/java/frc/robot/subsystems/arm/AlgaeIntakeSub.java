@@ -6,12 +6,12 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class Arm extends SubsystemBase {
+public class AlgaeIntakeSub extends SubsystemBase {
 
     private final WPI_VictorSPX leftArmMotor; //updated to WPI_VictorSPX
     private final WPI_VictorSPX rightArmMotor; //updated to WPI_VictorSPX
 
-    public Arm() {
+    public AlgaeIntakeSub() {
         // Initialize motors with correct CAN IDs
         leftArmMotor = new WPI_VictorSPX(4); //verify CAN ID
         rightArmMotor = new WPI_VictorSPX(2); //verify CAN ID

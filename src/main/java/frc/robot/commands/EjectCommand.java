@@ -2,34 +2,35 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.EjectCommandSub;
 import java.util.Set;
 
-public class ArmCommand extends Command {
+public class EjectCommand extends Command {
 
-    private final Arm armSubsystem;
+    private final EjectCommandSub armSubsystem;
     private final double speed;
 
-    public ArmCommand(Arm armSubsystem, double speed) {
+    public EjectCommand(EjectCommandSub armSubsystem, double speed) {
         this.armSubsystem = armSubsystem;
         this.speed = speed;
+        addRequirements(armSubsystem);
     }
 
     @Override
     public void initialize() {
-        System.out.println("ArmCommand initialized");
+        System.out.println("EjectCommand initialized");
     }
 
     @Override
     public void execute() {
         armSubsystem.runArms(speed);  // Run the arms at the given speed with is is a constant 50% speed
-        System.out.println("ArmCommand executing check ya arms in the console and real life! "+ speed);
+        System.out.println("EjectCommand executing check ya arms in the console and real life! "+ speed);
     }
 
     @Override
     public void end(boolean interrupted) {
         armSubsystem.stop();  // Stop motors when command ends or is interrupted
-        System.out.println("ArmCommand ended. err um stopped because you let go of the button" + interrupted);
+        System.out.println("EjectCommand ended. err um stopped because you let go of the button" + interrupted);
     }
 
     @Override

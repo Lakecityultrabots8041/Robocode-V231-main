@@ -5,8 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import java.util.List;
-import edu.wpi.first.math.geometry.Pose2d;
 
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -38,7 +36,11 @@ import frc.robot.subsystems.elevator.elevator;  //This imports the elevator subs
 import frc.robot.commands.*; // This Imports all commands from the folder commands
 import frc.robot.constants.ElevatorConstants;
 
-import frc.robot.subsystems.arm.Arm; // This imports the arm subsystem
+import frc.robot.subsystems.arm.AlgaeIntakeSub;
+import frc.robot.commands.AlgaeIntake;
+import frc.robot.commands.EjectCommand;
+import frc.robot.subsystems.arm.EjectCommandSub; // These import the arm subsystem
+
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -55,9 +57,11 @@ public class RobotContainer {
      private final SendableChooser<Command> autonChooser = new SendableChooser<>();
 
     // Setup for arm subsystem
-    private final Arm arm = new Arm();
+    private final AlgaeIntakeSub arm = new AlgaeIntakeSub();
+    private final EjectCommandSub exitarm = new EjectCommandSub();
     // Here, the arm will run at 50% speed. Adjust the value as needed.
-    private final ArmCommand ArmCommand = new ArmCommand(arm, 0.5); // <----- 50% speed Change here if needed
+    private final AlgaeIntake AlgaeIntake = new AlgaeIntake(arm, 0.5);
+    private final EjectCommand EjectCommand = new EjectCommand(exitarm, -0.5);  // <----- 50% speed Change here if needed
 
 
     /* Swerve Drivetrain bindings and things */
@@ -77,8 +81,8 @@ public class RobotContainer {
          // ── Teleop Option ──
         // Bind the ArmCommand to the controller's X button so that the command runs while the button is held.
 
-        controller.x().whileTrue(ArmCommand); //<---- Change this to whatever button you wish to use
-
+        controller.x().whileTrue(AlgaeIntake); //<---- Change this to whatever button you wish to use
+        controller.b().whileTrue(EjectCommand); //<---- Change this to whatever button you wish to use
         // Alternatively, if you prefer the arm command to run continuously (default command),
         // you can set it as the default command for the Arm subsystem:
         // arm.setDefaultCommand(armCommand);
@@ -159,7 +163,7 @@ public class RobotContainer {
          
         // ---- ARM BINDINGS ----
         // Bind the ArmCommand to the X button
-        controller.x().whileTrue(ArmCommand);
+        controller.x().whileTrue(AlgaeIntake);
 
          // ---- SYSID / FIELD-CENTRIC BINDINGS ----
         controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -174,7 +178,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return ArmCommand.withTimeout(3) //Change this when we get pathplanner setup
+        return AlgaeIntake.withTimeout(3) //Change this when we get pathplanner setup
         .andThen(Commands.print("Autonomous complete"));
     }
 }
