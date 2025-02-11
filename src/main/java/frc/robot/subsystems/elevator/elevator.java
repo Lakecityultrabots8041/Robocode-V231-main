@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class elevator extends SubsystemBase {
 
-    private final ElevatorIOs io;
+    private final ElevatorIO io;
     private final ElevatorIOInputs inputs = new ElevatorIOInputs();
   
     private final TalonFX leftMotor;

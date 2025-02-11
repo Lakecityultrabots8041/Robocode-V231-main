@@ -5,7 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-public class ElevatorIOReal implements ElevatorIOs {
+public class ElevatorIOReal implements ElevatorIO {
 
     private final TalonFX leftMotor = new TalonFX(5, "rio");  // Set correct CAN ID
     private final TalonFX rightMotor = new TalonFX(6, "rio"); // Set correct CAN ID
