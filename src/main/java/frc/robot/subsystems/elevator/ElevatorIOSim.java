@@ -6,7 +6,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 
-public class ElevatorIOSim implements ElevatorIO {
+public class ElevatorIOSim implements ElevatorIOs {
     private final ElevatorSim sim = new ElevatorSim(
         DCMotor.getFalcon500(2),  // get the Falcon 500 gearbox and number of motors
         4.0,               // gear ratio (adjust here if you change the gearbox)
