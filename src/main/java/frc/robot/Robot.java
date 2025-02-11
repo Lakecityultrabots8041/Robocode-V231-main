@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.MoveElevator;
 
 
 
@@ -19,11 +22,20 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private final RobotContainer m_robotContainer;
 
+  private final Map<String, Command> autoEventMap = new HashMap<>();
+
   public Robot() {     
     m_robotContainer = new RobotContainer();
+    configureAutoEvents();
   }
 
-
+    private void configureAutoEvents(){
+      autoEventMap.put(
+        "MoveElevatorToPosition",
+        new MoveElevator(m_robotContainer.getElevator(), 1000.0)  // Example target position
+    );
+    
+    }
   @Override
   public void robotInit() {
       // Set up the logger for data recording
