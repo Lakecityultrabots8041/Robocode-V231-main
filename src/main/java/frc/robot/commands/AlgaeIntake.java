@@ -23,7 +23,7 @@ public class AlgaeIntake extends Command {
 
     @Override
     public void execute() {
-        armSubsystem.runArms(speed);  // Run the arms at the given speed with is is a constant 50% speed
+        armSubsystem.runArms(-speed);  // Run the arms at the given speed with is is a constant 50% speed
         System.out.println("AlgaeIntake executing check ya arms in the console and real life! "+ speed);
     }
 

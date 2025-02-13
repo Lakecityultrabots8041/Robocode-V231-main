@@ -23,11 +23,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/* PATH PLANNER IMPORTS */
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.commands.FollowPathCommand;
-
+/* PATH PLANNER IMPORTS*/ 
+//import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.path.PathPlannerPath;
+//import com.pathplanner.lib.commands.FollowPathCommand;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -37,8 +36,6 @@ import frc.robot.commands.*; // This Imports all commands from the folder comman
 import frc.robot.constants.ElevatorConstants;
 
 import frc.robot.subsystems.arm.AlgaeIntakeSub;
-import frc.robot.commands.AlgaeIntake;
-import frc.robot.commands.EjectCommand;
 import frc.robot.subsystems.arm.EjectCommandSub; // These import the arm subsystem
 
 
@@ -81,8 +78,12 @@ public class RobotContainer {
          // ── Teleop Option ──
         // Bind the ArmCommand to the controller's X button so that the command runs while the button is held.
 
-        controller.x().whileTrue(AlgaeIntake); //<---- Change this to whatever button you wish to use
-        controller.b().whileTrue(EjectCommand); //<---- Change this to whatever button you wish to use
+        //????
+        controller.y().whileTrue(AlgaeIntake);
+        
+         //<---- Change this to whatever button you wish to use
+        controller.x().whileTrue(EjectCommand); //<---- Change this to whatever button you wish to use
+        
         // Alternatively, if you prefer the arm command to run continuously (default command),
         // you can set it as the default command for the Arm subsystem:
         // arm.setDefaultCommand(armCommand);
@@ -91,19 +92,19 @@ public class RobotContainer {
     }
     private void configureAuto() {
         // Load Paths from PathPlanner
-        Command centerBlueAuto = AutoBuilder.buildAuto("Center Blue Part 1"); // Name matches JSON file
-        Command part2auto = AutoBuilder.buildAuto("Part 2"); // Rename in pathplanner and here to matach above
-        Command part3auto = AutoBuilder.buildAuto("Part 3"); // Rename in pathplanner and here to matach above
-        Command part4auto = AutoBuilder.buildAuto("Part 4"); // Rename in pathplanner and here to matach above
-        Command part5auto = AutoBuilder.buildAuto("Part 5"); // Rename in pathplanner and here to matach above
-        Command part6auto = AutoBuilder.buildAuto("Part 6"); // Rename in pathplanner and here to matach above
+        //Command centerBlueAuto = AutoBuilder.buildAuto("Center Blue Part 1"); // Name matches JSON file
+        //Command part2auto = AutoBuilder.buildAuto("Part 2"); // Rename in pathplanner and here to matach above
+        //Command part3auto = AutoBuilder.buildAuto("Part 3"); // Rename in pathplanner and here to matach above
+        //Command part4auto = AutoBuilder.buildAuto("Part 4"); // Rename in pathplanner and here to matach above
+        //Command part5auto = AutoBuilder.buildAuto("Part 5"); // Rename in pathplanner and here to matach above
+        //Command part6auto = AutoBuilder.buildAuto("Part 6"); // Rename in pathplanner and here to matach above
     // Add Autonomous Commands to the SendableChooser
-        autonChooser.setDefaultOption("Center Blue Auto", centerBlueAuto);
-        autonChooser.addOption("Another Auto", part2auto);
-        autonChooser.addOption("Another Auto", part3auto);
-        autonChooser.addOption("Another Auto", part4auto);
-        autonChooser.addOption("Another Auto", part5auto);
-        autonChooser.addOption("Another Auto", part6auto);
+        //autonChooser.setDefaultOption("Center Blue Auto", centerBlueAuto);
+        //autonChooser.addOption("Another Auto", part2auto);
+        //autonChooser.addOption("Another Auto", part3auto);
+        //autonChooser.addOption("Another Auto", part4auto);
+        //autonChooser.addOption("Another Auto", part5auto);
+        //autonChooser.addOption("Another Auto", part6auto);
 
         // Display the auton chooser on SmartDashboard
         SmartDashboard.putData("Autonomous Mode", autonChooser);

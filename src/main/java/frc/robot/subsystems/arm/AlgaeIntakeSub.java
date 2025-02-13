@@ -1,7 +1,6 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -11,10 +10,14 @@ public class AlgaeIntakeSub extends SubsystemBase {
     private final WPI_VictorSPX leftArmMotor; //updated to WPI_VictorSPX
     private final WPI_VictorSPX rightArmMotor; //updated to WPI_VictorSPX
 
+
+
+
     public AlgaeIntakeSub() {
         // Initialize motors with correct CAN IDs
         leftArmMotor = new WPI_VictorSPX(4); //verify CAN ID
         rightArmMotor = new WPI_VictorSPX(2); //verify CAN ID
+        
         configureMotors();
     }
 
@@ -23,18 +26,17 @@ public class AlgaeIntakeSub extends SubsystemBase {
         leftArmMotor.setNeutralMode(NeutralMode.Brake);
         rightArmMotor.setNeutralMode(NeutralMode.Brake);
 
-        // Set right motor to follow the left motor
-        rightArmMotor.follow(leftArmMotor);
-        rightArmMotor.setInverted(InvertType.FollowMaster);  // Invert right motor to match left motor
     }
 
     public void runArms(double speed) {
         // Control left motor, and right motor follows
         leftArmMotor.set(speed);
+        rightArmMotor.set(speed);
     }
-
+    
     public void stop() {
-        leftArmMotor.set(0);  // Stop both motors
+        leftArmMotor.set(0);
+        rightArmMotor.set(0);  // Stop both motors
     }
 
     @Override
