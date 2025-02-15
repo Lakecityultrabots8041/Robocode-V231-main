@@ -1,7 +1,6 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -23,18 +22,17 @@ public class EjectCommandSub implements Subsystem {
         leftArmMotor.setNeutralMode(NeutralMode.Brake);
         rightArmMotor.setNeutralMode(NeutralMode.Brake);
 
-        // Set right motor to follow the left motor
-        rightArmMotor.follow(leftArmMotor);
-        rightArmMotor.setInverted(InvertType.FollowMaster);  // Invert right motor to match left motor
     }
 
     public void runArms(double speed) {
         // Control left motor, and right motor follows
         leftArmMotor.set(-speed);
+        rightArmMotor.set(-speed);
     }
 
     public void stop() {
-        leftArmMotor.set(0);  // Stop both motors
+        leftArmMotor.set(0);
+        rightArmMotor.set(0);  // Stop both motors
     }
 
     @Override
