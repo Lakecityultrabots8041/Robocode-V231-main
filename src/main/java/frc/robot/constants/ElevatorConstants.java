@@ -2,15 +2,18 @@ package frc.robot.constants;
 
 public final class ElevatorConstants {
     // PID
-    public static final double kP = 6.3;
-    public static final double kI = 3.7;
-    public static final double kD = 0.03;
-    public static final double kF = 0.05;  // Feed forward
+    public static final double kP = 0.15;     // Start conservative
+    public static final double kI = 0.0;      // Usually not needed for elevators
+    public static final double kD = 1.5;      // About 10x kP if you want damping
+    public static final double kV = 0.05;     // 
+    
+    //used if needed
     public static final double kS = 0.2; // Static friction compensation
     public static final double kG = 0.41;   // Gravity compensation if needed
+    public static final double kF = 0.05;     // Feedforward gain
     //motition magic constants
-    public static final int CRUISE_VELOCITY = 30;
-    public static final int  ACCELERATION = 16;
+    public static final int CRUISE_VELOCITY = 100;
+    public static final int  ACCELERATION = 150;
     
     
     // Motor IDs

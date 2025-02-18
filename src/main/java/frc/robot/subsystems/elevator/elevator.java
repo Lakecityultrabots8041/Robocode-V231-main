@@ -142,7 +142,7 @@ public class Elevator extends SubsystemBase {
         leftMotorConfig.Slot0.kP = ElevatorConstants.kP;
         leftMotorConfig.Slot0.kI = ElevatorConstants.kI;
         leftMotorConfig.Slot0.kD = ElevatorConstants.kD;
-        leftMotorConfig.Slot0.kV = ElevatorConstants.kF;
+        leftMotorConfig.Slot0.kV = ElevatorConstants.kV;
         leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
         leftMotorConfig.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
 

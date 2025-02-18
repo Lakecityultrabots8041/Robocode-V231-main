@@ -38,7 +38,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
     // Create a feedforward controller to simulate the Motion Magic behavior
     private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
-        ElevatorConstants.kS,
+        ElevatorConstants.kP,
         ElevatorConstants.kF,
         0.0  // No acceleration feedforward for now
     );
