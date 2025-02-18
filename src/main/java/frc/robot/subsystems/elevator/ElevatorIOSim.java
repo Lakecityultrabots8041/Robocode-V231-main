@@ -1,69 +1,114 @@
+
+
+// -------------------------------------------------------------------------- ONLY USED FOR SIMULATION IF YOU ARE NOT SIMULATING DO NOT TOUCH ------------------------------------------------------------------------------------------
+
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import frc.robot.constants.ElevatorConstants;
+import frc.robot.constants.ElevatorConstants.IOInputs;
 
 public class ElevatorIOSim implements ElevatorIO {
+    // Match the real elevator's conversion factor
+    private static final double ROTATIONS_TO_METERS = Math.PI * 0.0254 * 1.751; // Same as real implementation
+
     private final ElevatorSim sim = new ElevatorSim(
-        DCMotor.getFalcon500(2),  // get the Falcon 500 gearbox and number of motors
-        4.0,               // gear ratio (adjust here if you change the gearbox)
-        5.0,         // carriage mass in kg
-        0.05,     // pulley radius in meters
-        0.0,      // minimum height
-        1.32,     // maximum height (52 inches)
-        true,     // simulate gravity is reqiured so it can apply torgue to the motor
-        0.02 // measurement noise standard deviation (tune as needed)
+        DCMotor.getFalcon500(2),    // 2 Falcon 500s
+        4.0,                        // Gear ratio
+        5.0,                        // Carriage mass in kg
+        Units.inchesToMeters(1.751), // Pulley radius (matching real implementation)
+        0.0,                        // Min height
+        1.32,                       // Max height
+        true,                       // Simulate gravity
+        0.02                        // Measurement noise
     );
-    private final PIDController controller = new PIDController(0.1, 0.0, 0.0);
-    private final ElevatorFeedforward ff = new ElevatorFeedforward(0.2, 0.05, 0.0);
+
+    // Motion Magic simulation components
+    private double targetPosition = 0.0;
+    private double currentVelocity = 0.0;
+    private double currentPosition = 0.0;
     private double appliedVolts = 0.0;
+    private final double maxVelocity = ElevatorConstants.CRUISE_VELOCITY;
+    private final double maxAcceleration = ElevatorConstants.ACCELERATION;
+
+    // Create a feedforward controller to simulate the Motion Magic behavior
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
+        ElevatorConstants.kS,
+        ElevatorConstants.kF,
+        0.0  // No acceleration feedforward for now
+    );
+
+    // PID controller with the same gains as the real implementation
+    private final PIDController pidController = new PIDController(
+        ElevatorConstants.kP,
+        ElevatorConstants.kI,
+        ElevatorConstants.kD
+    );
 
     @Override
-    public void updateInputs(ElevatorIOInputs inputs) {
-        sim.update(0.02);  // Simulate a 20ms loop
+    public void updateInputs(IOInputs inputs) {
+        // Calculate motion profile
+        double positionError = targetPosition - currentPosition;
+        double desiredVelocity = 0.0;
 
-        inputs.position = sim.getPositionMeters();
-        inputs.velocity = sim.getVelocityMetersPerSecond();
-        inputs.appliedVoltsLeader = appliedVolts;
-        inputs.appliedVoltsFollower = appliedVolts;
+        // Simple trapezoidal motion profile
+        if (Math.abs(positionError) > 0.001) {
+            // Determine desired velocity based on position error
+            desiredVelocity = Math.signum(positionError) * maxVelocity;
+            
+            // Limit acceleration
+            double velocityError = desiredVelocity - currentVelocity;
+            double allowedVelocityChange = maxAcceleration * 0.02; // 20ms loop time
+            currentVelocity += MathUtil.clamp(velocityError, -allowedVelocityChange, allowedVelocityChange);
+        }
+
+        // Calculate voltage using PID and feedforward
+        double pidOutput = pidController.calculate(currentPosition, targetPosition);
+        double ffOutput = feedforward.calculate(currentVelocity);
+        double voltage = MathUtil.clamp(pidOutput + ffOutput, -12.0, 12.0);
+
+        // Update simulation
+        sim.setInputVoltage(voltage);
+        sim.update(0.02);  // 20ms update rate
+
+        // Update current position from simulation
+        currentPosition = sim.getPositionMeters();
+        
+        // Update inputs structure
+        inputs.position = currentPosition / ROTATIONS_TO_METERS; // Convert to rotations
+        inputs.velocity = sim.getVelocityMetersPerSecond() / ROTATIONS_TO_METERS;
+        inputs.appliedVoltsLeader = voltage;
+        inputs.appliedVoltsFollower = voltage;
         inputs.supplyCurrentLeader = sim.getCurrentDrawAmps();
         inputs.supplyCurrentFollower = sim.getCurrentDrawAmps();
-        inputs.torqueCurrentLeader = sim.getCurrentDrawAmps();
-        inputs.torqueCurrentFollower = sim.getCurrentDrawAmps();
-        inputs.temperatureLeader = 0.0;
-        inputs.temperatureFollower = 0.0;
-        inputs.setpointPosition = controller.getSetpoint();
-        inputs.setpointVelocity = 0.0;  // No velocity setpoint in this example
     }
 
     @Override
     public void runSetpoint(double targetPositionMeters) {
-        double currentHeight = sim.getPositionMeters();
-        double currentVelocity = sim.getVelocityMetersPerSecond();
-
-        double controllerVoltage = controller.calculate(currentHeight, targetPositionMeters);
-        double feedForwardVoltage = ff.calculate(currentVelocity);
-
-        double effort = MathUtil.clamp(controllerVoltage + feedForwardVoltage, -12, 12);
-        runVolts(effort);
-    }
-
-    @Override
-    public void runVolts(double volts) {
-        appliedVolts = volts;
-        sim.setInputVoltage(volts);
+        // Convert from meters to our internal units
+        this.targetPosition = targetPositionMeters;
+        pidController.setSetpoint(targetPositionMeters);
     }
 
     @Override
     public void setPID(double p, double i, double d) {
-        controller.setPID(p, i, d);
+        pidController.setPID(p, i, d);
     }
 
     @Override
     public void stop() {
-        runVolts(0.0);
+        targetPosition = currentPosition; // Stop at current position
+        currentVelocity = 0.0;
+        sim.setInputVoltage(0.0);
+    }
+
+    @Override
+    public void runVolts(double volts) {
+        sim.setInputVoltage(MathUtil.clamp(volts, -12.0, 12.0));
     }
 }

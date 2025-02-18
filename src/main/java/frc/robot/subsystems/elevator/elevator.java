@@ -11,73 +11,134 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ElevatorConstants;
 
+public class Elevator extends SubsystemBase {
 
+    public enum ElevatorHeight {
+        STOWED,         // Bottom/stowed position
+        CORAL_PICKUP,   // Coral intake position
+        FEEDER,         // Human player station pickup
+        ALGAE_L1,       // Bottom scoring (currently algae but intended for coral)
+        ALGAE_L2,       // Middle scoring (currently algae but intended for coral)
+        ALGAE_L3,       // Top scoring (currently algae but intended for coral)
+        NET_SCORE,      // Net scoring position
+        PROCESSOR,      // Transfer/processor position
+        CARRY           // Safe carrying position
+    }
 
-public class elevator extends SubsystemBase {
-
+    private ElevatorHeight currentTarget = ElevatorHeight.STOWED;
     private final ElevatorIO io;
-    private final ElevatorIOInputs inputs = new ElevatorIOInputs();
-  
+    private final ElevatorConstants.IOInputs inputs = new ElevatorConstants.IOInputs();
+
+    // Keep the motor objects only for configuration and encoder reading.
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
 
-  public elevator() {
-      if (RobotBase.isSimulation()) {
-            io = new ElevatorIOSim();  // Use simulation I/O during simulation
+    public Elevator() {
+        // Use simulation or real IO based on the runtime environment.
+        if (RobotBase.isSimulation()) {
+            io = new ElevatorIOSim();
         } else {
-            io = new ElevatorIOReal();  // Use real hardware I/O during deployment
+            io = new ElevatorIOReal();
         }
- 
-    // Initialize the elevator subsystem
-    leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, "rio");
-    rightMotor = new TalonFX(ElevatorConstants.RIGHT_MOTOR_ID, "rio");
+      
+        leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, "rio");
+        rightMotor = new TalonFX(ElevatorConstants.RIGHT_MOTOR_ID, "rio");
 
-    configureMotors();
-  }
+        configureMotors();
+    }
 
-  @Override
+    /**
+     * Sets the target height using a preset defined by the ElevatorHeight enum.
+     * This method uses a switch-case to determine the target height in meters (from ElevatorConstants)
+     * and then delegates to the double-based method, which passes the setpoint to the IO layer.
+     */
+    public void setTargetHeight(ElevatorHeight height) {
+        currentTarget = height;
+        double targetPosition;
+        switch (height) {
+            case STOWED:
+                targetPosition = ElevatorConstants.STOWED_HEIGHT;
+                break;
+            case CORAL_PICKUP:
+                targetPosition = ElevatorConstants.CORAL_PICKUP_HEIGHT;
+                break;
+            case FEEDER:
+                targetPosition = ElevatorConstants.FEEDER_HEIGHT;
+                break;
+            case ALGAE_L1:
+                targetPosition = ElevatorConstants.ALGAE_L1_HEIGHT;
+                break;
+            case ALGAE_L2:
+                targetPosition = ElevatorConstants.ALGAE_L2_HEIGHT;
+                break;
+            case ALGAE_L3:
+                targetPosition = ElevatorConstants.ALGAE_L3_HEIGHT;
+                break;
+            case NET_SCORE:
+                targetPosition = ElevatorConstants.NET_SCORE_HEIGHT;
+                break;
+            case PROCESSOR:
+                targetPosition = ElevatorConstants.PROCESSOR_HEIGHT;
+                break;
+            case CARRY:
+                targetPosition = ElevatorConstants.CARRY_HEIGHT;
+                break;
+            default:
+                targetPosition = ElevatorConstants.STOWED_HEIGHT;
+                break;
+        }
+        // Delegate to the double-based method so that conversion happens only in the IO layer.
+        setTargetHeight(targetPosition);
+    }
+
+    /**
+     * Sets the target height in meters.
+     * This method passes the setpoint to the IO layer, which converts meters to rotations
+     * and sends the Motion Magic command.
+     */
+    public void setTargetHeight(double targetPositionMeters) {
+        io.runSetpoint(targetPositionMeters);
+    }
+
+    public void holdPosition() {
+        io.runSetpoint(getCurrentHeight());
+    }
+
+    @Override
     public void periodic() {
-      io.updateInputs(inputs);
-
-      // Use this to display logging to terminal for debugging
-
-      // *** please note that this will spam the crap out of the terminal so its not really super useful but here in case you need it ***
-
-      //System.out.println("Elevator Position: " + inputs.position + " meters");
-      //System.out.println("Elevator Velocity: " + inputs.velocity + " m/s");
- 
-    // Record data to the log file instead of terminal. There are a ton of spam that will be recorded to the log file so be careful with this. The reason is in teleopPeriodic() we are calling get height and position method every 20ms. Meaning you will see
-    // a ton of data in the log file for the elevator subsystem.
+        io.updateInputs(inputs);
         Logger.recordOutput("Elevator/Position", inputs.position);
         Logger.recordOutput("Elevator/Velocity", inputs.velocity);
-  }
+        Logger.recordOutput("Elevator/TargetHeight", currentTarget.toString());
+    }
 
-    // Forward runVolts to the correct I/O implementation
+    // Delegate manual voltage control to IO.
     public void runVolts(double volts) {
         io.runVolts(volts);
     }
 
-    public void setTargetHeight(double targetPositionMeters) {
-       io.runSetpoint(targetPositionMeters);
-   }
-
+    // Delegate dynamic PID updates to IO.
     public void setPID(double p, double i, double d) {
-      io.setPID(p, i, d);
-  }
+        io.setPID(p, i, d);
+    }
 
+    // Delegate stopping to IO.
     public void stop() {
-       io.stop();
-   }
+        io.stop();
+    }
+
+    /**
+     * Configures the motor controllers with Motion Magic and PID settings.
+     * Encoder reset is performed here to zero the left encoder.
+     */
     private void configureMotors() {
-        // Reset motor configurations
         TalonFXConfiguration leftMotorConfig = new TalonFXConfiguration();
         TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
-        // Configure feedback sensor for the left motor
+
         FeedbackConfigs feedbackConfig = new FeedbackConfigs();
-        feedbackConfig.SensorToMechanismRatio = 1.0;  // Assuming 1:1, adjust if necessary
+        feedbackConfig.SensorToMechanismRatio = 1.0;
         leftMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-        // Set Motion Magic PID and acceleration configs from constants folder
         leftMotorConfig.Slot0.kP = ElevatorConstants.kP;
         leftMotorConfig.Slot0.kI = ElevatorConstants.kI;
         leftMotorConfig.Slot0.kD = ElevatorConstants.kD;
@@ -85,26 +146,37 @@ public class elevator extends SubsystemBase {
         leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
         leftMotorConfig.MotionMagic.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
 
-        // Apply configuration to motors
         leftMotor.getConfigurator().apply(leftMotorConfig);
         rightMotor.getConfigurator().apply(rightMotorConfig);
     
-        // Invert right motor and set to follow left motor
+        // Right motor follows the left motor (inverted).
         rightMotor.setControl(new Follower(leftMotor.getDeviceID(), true));
 
-        // Set neutral mode to brake
         leftMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         rightMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        // Zero the encoders at startup
+        
+        // Zero the encoder on the left motor.
         resetEncoders();
     }
 
-
+    /**
+     * Returns the current elevator height (using the left motor encoder).
+     */
     public double getCurrentHeight() {
         return leftMotor.getPosition().getValueAsDouble();
     }
 
+    /**
+     * Resets the encoder by zeroing the left motor encoder.
+     */
     public void resetEncoders() {
         leftMotor.set(0.0);
+    }
+
+    /**
+     * Returns the current target preset.
+     */
+    public ElevatorHeight getCurrentTarget() {
+        return currentTarget;
     }
 }

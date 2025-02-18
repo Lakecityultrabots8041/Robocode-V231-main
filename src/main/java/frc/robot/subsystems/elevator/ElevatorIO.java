@@ -1,4 +1,5 @@
 package frc.robot.subsystems.elevator;
+import frc.robot.constants.ElevatorConstants.IOInputs;
 
 public interface ElevatorIO {
 
@@ -7,7 +8,7 @@ public interface ElevatorIO {
     /**
      * Updates the current elevator inputs (position, velocity, voltage, etc.).
      */
-    void updateInputs(ElevatorIOInputs inputs);
+    void updateInputs(IOInputs inputs);
 
     /**
      * Runs the elevator to a specific setpoint position (in meters)

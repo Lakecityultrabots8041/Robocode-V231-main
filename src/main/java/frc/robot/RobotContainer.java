@@ -7,7 +7,9 @@ package frc.robot;
 // ---------- WPILIB IMPORTS ----------
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -24,19 +26,22 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-
-// ----------- ELEVATOR IMPORTS -----------
-import frc.robot.subsystems.elevator.elevator;  //This imports the elevator subsystem and the elevator command
 import frc.robot.commands.*; // This Imports all commands from the folder commands
 import frc.robot.constants.ElevatorConstants;
 
 // ----------- ARM IMPORTS -----------
 import frc.robot.subsystems.arm.AlgaeIntakeSub;
 import frc.robot.subsystems.arm.EjectCommandSub; // These import the arm subsystem
+import frc.robot.subsystems.elevator.Elevator;
 
 
 
 public class RobotContainer {
+
+    //controller setup
+    private final CommandXboxController controller = new CommandXboxController(0); // Controller setup
+
+
     // Setup for drivetrain subsystem
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -45,6 +50,8 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors **IMPORTANT**
+    
+    // line 108 ties this to button brake
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -52,12 +59,17 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    private final CommandXboxController controller = new CommandXboxController(0); // Controller setup
+    
 
-     // --------  Setup for elevator subsystem -----------------------------------------------------------------------------------------------------------------------
-     private final elevator elevator = new elevator();
+// --------  Setup for elevator subsystem -----------------------------------------------------------------------------------------------------------------------
+     
+ private final Elevator elevator = new Elevator();
+ 
+ public Elevator getElevator() {
+     return elevator;
+ }
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
      
   
@@ -76,14 +88,23 @@ public class RobotContainer {
         // ── Autonomous Display For SMARTBOARD ──
         autoChooser = AutoBuilder.buildAutoChooser("Auto Test"); // This is the name of the auto mode that will be displayed on the SmartDashboard
         SmartDashboard.putData("Auto Mode", autoChooser);
+
+
         
         configureBindings();
 
+        
+        elevator.setDefaultCommand(
+            new RunCommand(
+                () -> elevator.holdPosition(),
+                elevator
+            )
+        );
     }
 
     // ── Autonomous Option ──
     private void registerNamedCommands() { //Remember a void is a function that does not return anything, this is a statement to register the named commands 
-        NamedCommands.registerCommand("MoveElevatorPosition", new MoveElevator(elevator, 1000.0));
+        NamedCommands.registerCommand("MoveElevatorPosition", new SetElevatorLevel(elevator, 1.0));
 
         // Add more commands here when built in path planner just like above, MoveElevatorPosition is what was named in pathPlanner event mode)
     }
@@ -102,13 +123,15 @@ public class RobotContainer {
         );
 
         
+        // Choose a button below to handle emergency brake
         controller.a().whileTrue(drivetrain.applyRequest(() -> brake)); //Emergency Brake
-         
-        
         // Point mode on right stick button press
-        controller.rightStick().whileTrue(drivetrain.applyRequest(() ->
+        controller.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))
         ));
+
+
+
         // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         
@@ -121,18 +144,12 @@ public class RobotContainer {
         /* -----------ELEVATOR BINDINGS ----------------------------------------------------------------- */
         controller.getLeftTriggerAxis();
         new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-            .onTrue(new AdjustElevator(elevator, -0.05)); 
+            .whileTrue(new ManualElevatorAdjust(elevator, -0.05)); 
 
         new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
-            .onTrue(new AdjustElevator(elevator, 0.05));   // Raise elevator by 0.05 m
-
-         /* new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-         .whileTrue(new MoveElevator(elevator, 0));  // Lower elevator with Left Trigger
-
-         new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
-         .whileTrue(new MoveElevator(elevator, 20000));  // Raise elevator with Right Trigger */
+            .whileTrue(new ManualElevatorAdjust(elevator, 0.05));   // Raise elevator by 0.05 m
         
-         // Bind D-pad directions to preset elevator positions:
+            // D-Pad for presets
         controller.povUp().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_4));
         controller.povRight().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_3));
         controller.povLeft().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_2));

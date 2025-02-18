@@ -12,9 +12,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.MoveElevator;
-
-
+import frc.robot.commands.SetElevatorLevel;
 
 public class Robot extends LoggedRobot {
 
@@ -32,8 +30,8 @@ public class Robot extends LoggedRobot {
     private void configureAutoEvents(){
       autoEventMap.put(
         "MoveElevatorToPosition",
-        new MoveElevator(m_robotContainer.getElevator(), 1000.0)  // Example target position
-    );
+        new SetElevatorLevel(m_robotContainer.getElevator(), 1.0) // Using meters instead of encoder counts, we will want to set this to l3 height here
+        ); 
     
     }
   @Override
@@ -87,24 +85,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-
-    // Get trigger inputs for elevator control
-    double upTrigger = m_robotContainer.getController().getRightTriggerAxis();
-    double downTrigger = m_robotContainer.getController().getLeftTriggerAxis();
-
-    // Calculate elevator voltage (-12V to 12V range)
-    double elevatorVoltage = (upTrigger - downTrigger) * 12.0;
-
-    // Apply voltage to the elevator
-    m_robotContainer.getElevator().runVolts(elevatorVoltage);
-
-    // Log applied voltage for debugging
-    Logger.recordOutput("Elevator/AppliedVoltage", elevatorVoltage);
-
-
-
-  }
-
+     // Log elevator height for debugging
+     Logger.recordOutput("Elevator/CurrentHeight", m_robotContainer.getElevator().getCurrentHeight());
+ }
 
   @Override
   public void teleopExit() {}

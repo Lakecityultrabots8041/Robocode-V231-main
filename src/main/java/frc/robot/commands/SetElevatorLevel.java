@@ -1,15 +1,15 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.elevator.elevator;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.elevator.Elevator;
 
 public class SetElevatorLevel extends Command {
 
-    private final elevator elevator;
+    private final Elevator elevator;
     private final double targetHeight;
     private final double tolerance = 0.05; // in meters
 
-    public SetElevatorLevel(elevator elevator, double targetHeight) {
+    public SetElevatorLevel(Elevator elevator, double targetHeight) {
         this.elevator = elevator;
         this.targetHeight = targetHeight;
         addRequirements(elevator);
@@ -19,20 +19,15 @@ public class SetElevatorLevel extends Command {
     public void initialize() {
         elevator.setTargetHeight(targetHeight);
     }
-
-    @Override
-    public void execute() {
-        // Optionally log progress or monitor the elevator's motion here.
-    }
-
     @Override
     public boolean isFinished() {
-        // Command is finished once the elevator is within tolerance of the target.
-        return Math.abs(elevator.getCurrentHeight() - targetHeight) < tolerance;
+        return Math.abs(elevator.getCurrentHeight() - targetHeight) < tolerance; // this seems like very unsafe code but i not sure right now what else to do. if the tolerance is too small the elevator will never stop so kind of sketch
     }
 
     @Override
     public void end(boolean interrupted) {
-        // Optionally, you can stop or hold the elevator here.
+        if (interrupted) {
+            System.out.println("Elevator movement interrupted");
+        }
     }
 }
