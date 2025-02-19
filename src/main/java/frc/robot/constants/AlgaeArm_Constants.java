@@ -22,6 +22,10 @@ public class AlgaeArm_Constants {
     
     // Motor IDs
      public static final int MOTOR_ID = 0;
+
+     // Set other motors here
+     // public static final int OTHER_MOTOR_ID = 1;
+     // public static final int OTHER_MOTOR_ID = 2; 
     
     //motition magic constants
     public static final int CRUISE_VELOCITY = 15;
