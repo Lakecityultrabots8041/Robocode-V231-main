@@ -1,6 +1,13 @@
 package frc.robot.constants;
 
-public class ClimberConstants {
+
+/**
+ * Constants for the Climber subsystem. This class should contain all the
+ * constant values for the Climber subsystem, including motor IDs, PID
+ * constants, and any other constants that are needed.
+ */
+
+public class Climber_Constants {
     public static final double kDt = 0.02;
     public static final double kMaxVelocity = 1.75; // these are wblib values not motion magic
     public static final double kMaxAcceleration = 0.75; // these are wblib values not motion magic

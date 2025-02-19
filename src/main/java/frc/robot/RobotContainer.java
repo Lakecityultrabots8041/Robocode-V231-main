@@ -26,60 +26,64 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.algae_arm.Algae_Intake_Sub;
+import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
+import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
+import frc.robot.subsystems.elevator.Elevator_Subsystem;
 import frc.robot.commands.*; // This Imports all commands from the folder commands
-import frc.robot.constants.ElevatorConstants;
-
-// ----------- ARM IMPORTS -----------
-import frc.robot.subsystems.arm.AlgaeIntakeSub;
-import frc.robot.subsystems.arm.EjectCommandSub; // These import the arm subsystem
-import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.constants.AlgaeArm_Constants;
+import frc.robot.constants.Elevator_Constants;
 
 
 
 public class RobotContainer {
-
+    
     //controller setup
     private final CommandXboxController controller = new CommandXboxController(0); // Controller setup
 
-
-    // Setup for drivetrain subsystem
+    //--------------------DRIVETRAIN SETUP------------------------------------------------------------------------------------------------------------------------
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    /* Swerve Drivetrain bindings and things */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors **IMPORTANT**
     
-    // line 108 ties this to button brake
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
     private final Telemetry logger = new Telemetry(MaxSpeed);
-
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+    //--------------------ARM SETUP------------------------------------------------------------------------------------------------------------------------
+   
+    // Setup for arm subsystem
+    private final Algae_Intake_Sub algae_intake = new Algae_Intake_Sub();
+    private final Algae_EjectCommand_Sub algae_deploy = new Algae_EjectCommand_Sub();
+
+    private final Algae_ArmLift_Sub algae_arm_lift = new Algae_ArmLift_Sub(AlgaeArm_Constants.MOTOR_ID);
+
+    private final Lift_AlgaeArm_Command setArm_Home = new Lift_AlgaeArm_Command(algae_arm_lift, AlgaeArm_Constants.ARM_LOWER_POSITION);
+    private final Lift_AlgaeArm_Command setArm_Extended = new Lift_AlgaeArm_Command(algae_arm_lift, AlgaeArm_Constants.ARM_UPPER_POSITION);
+
+    // Here, the arm will run at 50% speed. Adjust the value as needed.
+    private final AlgaeIntake AlgaeIntake = new AlgaeIntake(algae_intake, 0.5);
+    private final EjectCommand EjectCommand = new EjectCommand(algae_deploy, -0.5); 
     
 
-// --------  Setup for elevator subsystem -----------------------------------------------------------------------------------------------------------------------
-     
- private final Elevator elevator = new Elevator();
+// --------  Setup for elevator subsystem -----------------------------------------------------------------------------------------------------------------------    
+ private final Elevator_Subsystem elevator = new Elevator_Subsystem();
+
+// Preset Elevator Levels called from SetElevatorLevel.java------------------------------------------------
+ private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
+ private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
+ private final SetElevatorLevel setElevator_L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
+ private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Processor_Position);
  
- public Elevator getElevator() {
-     return elevator;
- }
+ 
+ 
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-     
-  
-    // ----- ARM SUBSTEMS ----------------------------------------------------------------------------------------------------------------------------------------------
-    private final AlgaeIntakeSub arm = new AlgaeIntakeSub();
-    private final EjectCommandSub exitarm = new EjectCommandSub();
-    private final AlgaeIntake AlgaeIntake = new AlgaeIntake(arm, 0.5);// Here, the arm will run at 50% speed. Adjust the value as needed.
-    private final EjectCommand EjectCommand = new EjectCommand(exitarm, -0.5);  // <----- 50% speed Change here if needed
-    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
     private final SendableChooser<Command> autoChooser; // *Path Follower*
 
     public RobotContainer() {
@@ -93,13 +97,6 @@ public class RobotContainer {
         
         configureBindings();
 
-        
-        elevator.setDefaultCommand(
-            new RunCommand(
-                () -> elevator.holdPosition(),
-                elevator
-            )
-        );
     }
 
     // ── Autonomous Option ──
@@ -109,6 +106,10 @@ public class RobotContainer {
         // Add more commands here when built in path planner just like above, MoveElevatorPosition is what was named in pathPlanner event mode)
     }
     
+
+    public Elevator_Subsystem getElevator() {
+        return elevator;
+    }
     
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -118,7 +119,7 @@ public class RobotContainer {
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 2) // Adjust / 2 to change speed
                     .withVelocityY(-controller.getLeftX() * MaxSpeed / 2) // Adjust / 2 to change speed
-                    .withRotationalRate(-controller.getRightX() * MaxAngularRate / 3) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -132,28 +133,20 @@ public class RobotContainer {
 
 
 
-        // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        
         // -------- Arm Command Button ASSIGNMENTS ---------------------------------------------------
-        controller.x().whileTrue(AlgaeIntake); //<---- Change this to whatever button you wish to use
-        controller.b().whileTrue(EjectCommand); //<---- Change this to whatever button you wish to use
+        controller.x().whileTrue(AlgaeIntake); 
+        controller.b().whileTrue(EjectCommand); 
+
+        controller.rightTrigger().onTrue(setArm_Extended);
+        controller.leftTrigger().onTrue(setArm_Home);
         // --------------------------------------------------------------------------------------------
 
 
-        /* -----------ELEVATOR BINDINGS ----------------------------------------------------------------- */
-        controller.getLeftTriggerAxis();
-        new Trigger(() -> controller.getLeftTriggerAxis() > 0.1)
-            .whileTrue(new ManualElevatorAdjust(elevator, -0.05)); 
-
-        new Trigger(() -> controller.getRightTriggerAxis() > 0.1)
-            .whileTrue(new ManualElevatorAdjust(elevator, 0.05));   // Raise elevator by 0.05 m
-        
-            // D-Pad for presets
-        controller.povUp().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_4));
-        controller.povRight().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_3));
-        controller.povLeft().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_2));
-        controller.povDown().onTrue(new SetElevatorLevel(elevator, ElevatorConstants.LEVEL_1));
+        // ---- ELEVATOR BINDINGS ---------------------------------------------------------------------
+        controller.povUp().onTrue(setElevator_PP); // sets elevator to processor position and arm to intake position
+        controller.povRight().onTrue(setElevator_L2);
+        controller.povLeft().onTrue(setElevator_L3);
+        controller.povDown().onTrue(setElevator_Home); // Set elevator to home position
         // -------------------------------------------------------------------------------------------
 
          // ---- SYSID / FIELD-CENTRIC BINDINGS ----

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.CoralArm;
+package frc.robot.subsystems.coral_arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
