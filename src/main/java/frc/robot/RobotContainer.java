@@ -7,11 +7,8 @@ package frc.robot;
 // ---------- WPILIB IMPORTS ----------
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Rotation2d;
-import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 // ------  SMART DASHBOARD IMPORTS  ------
@@ -38,8 +35,8 @@ import frc.robot.constants.Elevator_Constants;
 
 public class RobotContainer {
     
-    //controller setup
-    private final CommandXboxController controller = new CommandXboxController(0); // Controller setup
+    //Setup Command Xbox Controller
+    private final CommandXboxController controller = new CommandXboxController(0); 
 
     //--------------------DRIVETRAIN SETUP------------------------------------------------------------------------------------------------------------------------
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -47,41 +44,42 @@ public class RobotContainer {
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors **IMPORTANT**
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open loop voltage control over closed loop control
     
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final Telemetry logger = new Telemetry(MaxSpeed);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    //--------------------ARM SETUP------------------------------------------------------------------------------------------------------------------------
+    ////--------------------ARM SETUP---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
    
     // Setup for arm subsystem
     private final Algae_Intake_Sub algae_intake = new Algae_Intake_Sub();
     private final Algae_EjectCommand_Sub algae_deploy = new Algae_EjectCommand_Sub();
-
     private final Algae_ArmLift_Sub algae_arm_lift = new Algae_ArmLift_Sub(AlgaeArm_Constants.MOTOR_ID);
-
-    private final Lift_AlgaeArm_Command setArm_Home = new Lift_AlgaeArm_Command(algae_arm_lift, AlgaeArm_Constants.ARM_LOWER_POSITION);
-    private final Lift_AlgaeArm_Command setArm_Extended = new Lift_AlgaeArm_Command(algae_arm_lift, AlgaeArm_Constants.ARM_UPPER_POSITION);
-
-    // Here, the arm will run at 50% speed. Adjust the value as needed.
-    private final AlgaeIntake AlgaeIntake = new AlgaeIntake(algae_intake, 0.5);
-    private final EjectCommand EjectCommand = new EjectCommand(algae_deploy, -0.5); 
     
+    // Setup for arm intake and eject commands
+    private final AA_Intake_cmd AlgaeIntake = new AA_Intake_cmd(algae_intake, 0.5);
+    private final AA_Eject_cmd EjectCommand = new AA_Eject_cmd(algae_deploy, -0.5); 
+     
+    // Setup for arm lift commands
+    private final AA_Control_cmd setArm_Home = new AA_Control_cmd(algae_arm_lift, AlgaeArm_Constants.ARM_LOWER_POSITION);
+    private final AA_Control_cmd setArm_Extended = new AA_Control_cmd(algae_arm_lift, AlgaeArm_Constants.ARM_UPPER_POSITION);
 
-// --------  Setup for elevator subsystem -----------------------------------------------------------------------------------------------------------------------    
- private final Elevator_Subsystem elevator = new Elevator_Subsystem();
 
-// Preset Elevator Levels called from SetElevatorLevel.java------------------------------------------------
- private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
- private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
- private final SetElevatorLevel setElevator_L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
- private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Processor_Position);
+    ////--------------------------------------ELEVATOR SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
+    
+    // Setup for elevator subsystem    
+    private final Elevator_Subsystem elevator = new Elevator_Subsystem();
+
+    // Assign
+    private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
+    private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
+    private final SetElevatorLevel setElevator_L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
+    private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Processor_Position);
  
  
  
-
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private final SendableChooser<Command> autoChooser; // *Path Follower*

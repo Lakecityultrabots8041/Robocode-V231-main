@@ -23,7 +23,7 @@ public class Processor_Score_Position extends SequentialCommandGroup {
                 Math.abs(elevator.getCurrentHeight() - Elevator_Constants.Processor_Position) < 0.05),
             
             // Then extend the arm to scoring position
-            new Lift_AlgaeArm_Command(arm, AlgaeArm_Constants.ARM_UPPER_POSITION)
+            new AA_Control_cmd(arm, AlgaeArm_Constants.ARM_UPPER_POSITION)
         );
     }
 }

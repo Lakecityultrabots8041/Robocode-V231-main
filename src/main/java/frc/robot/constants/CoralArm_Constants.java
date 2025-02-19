@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
  */
 
 
-public class AlgaeArm_Constants {
+public class CoralArm_Constants {
     public static final double kS = .25;
     public static final double kV = .12;
     public static final double kA = 0.01;
@@ -21,7 +21,7 @@ public class AlgaeArm_Constants {
     public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
     
     // Motor IDs
-     public static final int MOTOR_ID = 0;
+     public static final int MOTOR_ID = 15; // ************Change this to the correct motor ID***********
     
     //motition magic constants
     public static final int CRUISE_VELOCITY = 15;
@@ -35,7 +35,7 @@ public class AlgaeArm_Constants {
     
 
      // Add any preset positions or tolerances here as needed
-    private AlgaeArm_Constants() {} // Prevent instantiation
+    private CoralArm_Constants() {} // Prevent instantiation
 
     
 }

@@ -3,12 +3,16 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
 
-public class Lift_AlgaeArm_Command extends Command {
+
+////--------------------------------------Algae Lift Arm Control Command--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
+
+
+public class AA_Control_cmd extends Command {
 
     private final Algae_ArmLift_Sub armLift;
     private final double targetHeight;
 
-    public Lift_AlgaeArm_Command(Algae_ArmLift_Sub armLiftSubsystem, double targetHeight) {
+    public AA_Control_cmd(Algae_ArmLift_Sub armLiftSubsystem, double targetHeight) {
         this.armLift = armLiftSubsystem;
         this.targetHeight = targetHeight;
         addRequirements(armLiftSubsystem);  //Ensures that only one command can use the subsystem at a time

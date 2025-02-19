@@ -3,15 +3,19 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
-
 import java.util.Set;
 
-public class EjectCommand extends Command {
+
+
+////--------------------------------------Algae Eject Command--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
+
+
+public class AA_Eject_cmd extends Command {
 
     private final Algae_EjectCommand_Sub armSubsystem;
     private final double speed;
 
-    public EjectCommand(Algae_EjectCommand_Sub armSubsystem, double speed) {
+    public AA_Eject_cmd(Algae_EjectCommand_Sub armSubsystem, double speed) {
         this.armSubsystem = armSubsystem;
         this.speed = speed;
         addRequirements(armSubsystem);

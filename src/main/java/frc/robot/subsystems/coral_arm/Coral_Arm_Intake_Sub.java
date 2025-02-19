@@ -5,10 +5,10 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class CoralIntake extends SubsystemBase {
+public class Coral_Arm_Intake_Sub extends SubsystemBase {
     private final VictorSPX intakeMotor;
 
-    public CoralIntake(int motorPort) {
+    public Coral_Arm_Intake_Sub(int motorPort) {
         intakeMotor = new VictorSPX(motorPort);
     }
 
