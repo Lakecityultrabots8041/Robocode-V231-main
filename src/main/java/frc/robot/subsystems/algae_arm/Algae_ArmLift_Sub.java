@@ -15,9 +15,8 @@ public class Algae_ArmLift_Sub extends SubsystemBase {
 
     private final TalonFX algaeArm;
 
-    public Algae_ArmLift_Sub(int canID) {
+    public Algae_ArmLift_Sub() {
         algaeArm = new TalonFX(AlgaeArm_Constants.MOTOR_ID, "rio");  // Use the correct CAN ID for the Kraken motor and replace canID with the number
-        algaeArm.setNeutralMode(NeutralModeValue.Brake);  // Set to brake mode for precise control
         configureMotors();
     }
 
@@ -41,6 +40,8 @@ public class Algae_ArmLift_Sub extends SubsystemBase {
          AlgaeArm.MotionMagic.MotionMagicAcceleration = AlgaeArm_Constants.ACCELERATION;
          AlgaeArm.MotionMagic.MotionMagicJerk = AlgaeArm_Constants.JERK;
          AlgaeArm.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+
+         AlgaeArm.MotorOutput.NeutralMode = NeutralModeValue.Brake;;  // Set to brake mode for precise control
 
         algaeArm.getConfigurator().apply(AlgaeArm);
 

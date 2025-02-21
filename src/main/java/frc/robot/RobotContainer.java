@@ -56,15 +56,17 @@ public class RobotContainer {
     // Setup for arm subsystem
     private final Algae_Intake_Sub algae_intake = new Algae_Intake_Sub();
     private final Algae_EjectCommand_Sub algae_deploy = new Algae_EjectCommand_Sub();
-    private final Algae_ArmLift_Sub algae_arm_lift = new Algae_ArmLift_Sub(AlgaeArm_Constants.MOTOR_ID);
     
+    
+    private final Algae_ArmLift_Sub algae_arm = new Algae_ArmLift_Sub();
+     // Setup for arm lift commands
+     private final AA_Control_cmd setArm_Home = new AA_Control_cmd(algae_arm, AlgaeArm_Constants.ARM_LOWER_POSITION);
+     private final AA_Control_cmd setArm_Extended = new AA_Control_cmd(algae_arm, AlgaeArm_Constants.ARM_UPPER_POSITION);
     // Setup for arm intake and eject commands
     private final AA_Intake_cmd AlgaeIntake = new AA_Intake_cmd(algae_intake, 0.5);
     private final AA_Eject_cmd EjectCommand = new AA_Eject_cmd(algae_deploy, -0.5); 
      
-    // Setup for arm lift commands
-    private final AA_Control_cmd setArm_Home = new AA_Control_cmd(algae_arm_lift, AlgaeArm_Constants.ARM_LOWER_POSITION);
-    private final AA_Control_cmd setArm_Extended = new AA_Control_cmd(algae_arm_lift, AlgaeArm_Constants.ARM_UPPER_POSITION);
+   
 
 
     ////--------------------------------------ELEVATOR SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
@@ -76,7 +78,7 @@ public class RobotContainer {
     private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
     private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
     private final SetElevatorLevel setElevator_L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
-    private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Processor_Position);
+    private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Player_Coral_Load_Height);
  
  
  
