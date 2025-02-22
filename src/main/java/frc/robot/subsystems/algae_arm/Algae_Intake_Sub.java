@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class Algae_Intake_Sub extends SubsystemBase {
 
@@ -32,6 +33,11 @@ public class Algae_Intake_Sub extends SubsystemBase {
         // Control left motor, and right motor follows
         leftArmMotor.set(speed);
         rightArmMotor.set(speed);
+    }
+
+    public void intake(double speed) {
+        leftArmMotor.set(ControlMode.PercentOutput, 0.20); // Run the motor at NOT full speed to intake
+        rightArmMotor.set(ControlMode.PercentOutput, 0.20);
     }
     
     public void stop() {

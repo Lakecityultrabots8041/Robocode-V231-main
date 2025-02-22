@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
+//Not used
+
 public class IntakeSubsystem extends SubsystemBase {
 
     private final WPI_VictorSPX leftIntakeMotor; //updated to WPI_VictorSPX

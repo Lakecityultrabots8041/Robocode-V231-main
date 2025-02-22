@@ -17,7 +17,7 @@ public class Coral_ArmLift_Sub extends SubsystemBase {
 
     private final TalonFX coralArm;
 
-    public Coral_ArmLift_Sub(int canID) {
+    public Coral_ArmLift_Sub() {
         coralArm = new TalonFX(CoralArm_Constants.MOTOR_ID, "rio");  // Use the correct CAN ID for the Kraken motor and replace canID with the number
         coralArm.setNeutralMode(NeutralModeValue.Brake);  // Set to brake mode for precise control
         configureMotors();
@@ -44,8 +44,10 @@ public class Coral_ArmLift_Sub extends SubsystemBase {
          Coral_Motor_config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
          coralArm.getConfigurator().apply(Coral_Motor_config);
+    }
 
-     
+    public double getCurrentHeight() {
+        return coralArm.getPosition().getValueAsDouble();
     }
 }
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.algae_arm;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import org.littletonrobotics.junction.Logger;
@@ -15,6 +16,11 @@ public class Algae_EjectCommand_Sub implements Subsystem {
         leftArmMotor = new WPI_VictorSPX(4); //verify CAN ID
         rightArmMotor = new WPI_VictorSPX(2); //verify CAN ID
         configureMotors();
+    }
+
+     public void intake(double speed) {
+        leftArmMotor.set(ControlMode.PercentOutput, 0.20); // Run the motor at NOT full speed to intake
+        rightArmMotor.set(ControlMode.PercentOutput, 0.20);
     }
 
     private void configureMotors() {

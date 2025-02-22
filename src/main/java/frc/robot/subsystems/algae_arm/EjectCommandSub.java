@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
+//Not used for Algae
+
 public class EjectCommandSub implements Subsystem {
 
     private final WPI_VictorSPX leftArmMotor; //updated to WPI_VictorSPX

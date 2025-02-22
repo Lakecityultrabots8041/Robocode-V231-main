@@ -21,7 +21,11 @@ public class CoralArm_Constants {
     public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
     
     // Motor IDs
-     public static final int MOTOR_ID = 15; // ************Change this to the correct motor ID***********
+     public static final int MOTOR_ID = 15;
+
+     //intake motor id
+     public static final int intake_motor_ID = 7;
+      // ************Change this to the correct motor ID***********
     
     //motition magic constants
     public static final int CRUISE_VELOCITY = 15;
@@ -29,12 +33,15 @@ public class CoralArm_Constants {
     public static final int JERK = 30;
 
     // **Preset arm positions (units must match your sensor's output)**
-    public static final double ARM_LOWER_POSITION = 0.449707;
-    public static final double ARM_UPPER_POSITION = 1.594238;
+    public static final double ARM_LOWER_POSITION = 0.02;
+    public static final double ARM_UPPER_POSITION = -1.12;
+    public static final double Coral_Intake_LV = -1.332;
     
-    
+   
 
      // Add any preset positions or tolerances here as needed
+
+
     private CoralArm_Constants() {} // Prevent instantiation
 
     

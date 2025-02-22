@@ -2,7 +2,7 @@ package frc.robot.subsystems.algae_arm;
 
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -20,8 +20,10 @@ public class Algae_ArmLift_Sub extends SubsystemBase {
         configureMotors();
     }
 
+
+    // change motion magic expo to just motionmagic
     public void setTargetHeight(double targetPositionMeters) {
-        final MotionMagicExpoVoltage mmReq = new MotionMagicExpoVoltage(0);
+        final MotionMagicVoltage mmReq = new MotionMagicVoltage(0);
         algaeArm.setControl(mmReq.withPosition(targetPositionMeters));
     }
  
@@ -36,6 +38,7 @@ public class Algae_ArmLift_Sub extends SubsystemBase {
          AlgaeArm.Slot0.kP = AlgaeArm_Constants.kP;
          AlgaeArm.Slot0.kI = AlgaeArm_Constants.kI;
          AlgaeArm.Slot0.kD = AlgaeArm_Constants.kd; 
+         AlgaeArm.Slot0.kG = AlgaeArm_Constants.kG;
          AlgaeArm.MotionMagic.MotionMagicCruiseVelocity = AlgaeArm_Constants.CRUISE_VELOCITY;
          AlgaeArm.MotionMagic.MotionMagicAcceleration = AlgaeArm_Constants.ACCELERATION;
          AlgaeArm.MotionMagic.MotionMagicJerk = AlgaeArm_Constants.JERK;
