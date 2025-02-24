@@ -13,21 +13,21 @@ import frc.robot.subsystems.elevator.Elevator_Subsystem;
  * A command sequence that moves the elevator to processor height
  * and then extends the arm to scoring position.
  */
-//Change values from L3 to L2
 
-public class Move_L2_Score extends SequentialCommandGroup {
 
-    public Move_L2_Score(Elevator_Subsystem elevator, 
+public class Move_L1_Score extends SequentialCommandGroup {
+
+    public Move_L1_Score(Elevator_Subsystem elevator, 
     Coral_ArmLift_Sub coral_arm,  
     Algae_ArmLift_Sub algae_arm) {
 
 addCommands(
 // First move elevator to processor height
-new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score),  
+new SetElevatorLevel(elevator, Elevator_Constants.L1_Bottom_Score),  
 
 // Wait until the elevator is close to target position
 new WaitUntilCommand(() -> 
-Math.abs(elevator.getCurrentHeight() - Elevator_Constants.L2_Middle_Score) < 0.1),
+Math.abs(elevator.getCurrentHeight() - Elevator_Constants.L1_Bottom_Score) < 0.1),
 
 // Then extend the coral arm to scoring position
 new CA_ctrl_cmd(coral_arm, CoralArm_Constants.ARM_UPPER_POSITION),
@@ -41,5 +41,4 @@ new AA_Control_cmd(algae_arm, AlgaeArm_Constants.ARM_UPPER_POSITION)
 );
 }
 }
-    
     

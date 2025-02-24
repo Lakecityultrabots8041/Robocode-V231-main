@@ -6,7 +6,7 @@ package frc.robot;
 
 // ---------- WPILIB IMPORTS ----------
 import static edu.wpi.first.units.Units.*;
-import edu.wpi.first.math.geometry.Rotation2d;
+//import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -48,8 +48,8 @@ public class RobotContainer {
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open loop voltage control over closed loop control
     
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    //private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final Telemetry logger = new Telemetry(MaxSpeed);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -79,9 +79,9 @@ public class RobotContainer {
 
     // Assign
     private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
-    private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
+    //private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
     //private final SetElevatorLevel setElevator_L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
-    private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Player_Coral_Load_Height);
+    //private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Player_Coral_Load_Height);
     
 
     //Declare the Coral Arm subsystem
@@ -90,7 +90,11 @@ public class RobotContainer {
     private final CA_WheelIn_cmd ca_wheelin_cmd = new CA_WheelIn_cmd(intakeMotor, 0.05);
     private final CA_WheelOut_cmd ca_wheelout_cmd = new CA_WheelOut_cmd(intakeMotor, 0.05);
     private final CA_Intake_cmd ca_intake_command = new CA_Intake_cmd(elevator, coral_arm, algae_arm);
-    private final Move_L3_Score move_L3_Score = new Move_L3_Score(elevator, coral_arm, algae_arm);
+
+    // Setup for elevator commands
+    private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, coral_arm, algae_arm);
+    private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, coral_arm, algae_arm);
+    //private final Move_L1_Score move_L1_score = new Move_L1_Score(elevator, coral_arm, algae_arm);
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private final SendableChooser<Command> autoChooser; // *Path Follower*
@@ -134,17 +138,17 @@ public class RobotContainer {
 
         
         // Choose a button below to handle emergency brake
-        controller.a().whileTrue(drivetrain.applyRequest(() -> brake)); //Emergency Brake
+        //controller.a().whileTrue(drivetrain.applyRequest(() -> brake)); //Emergency Brake
         // Point mode on right stick button press
-        controller.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))
-        ));
+        //controller.b().whileTrue(drivetrain.applyRequest(() ->
+            //point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))
+        
 
 
 
         // -------- ALGAE Arm Command Button ASSIGNMENTS ---------------------------------------------------
-        controller.povLeft().whileTrue(AlgaeIntake); 
-        controller.povRight().whileTrue(EjectCommand); 
+        controller.rightTrigger().whileTrue(AlgaeIntake); 
+        controller.leftTrigger().whileTrue(EjectCommand); 
 
         //controller.rightTrigger().onTrue(setArm_Extended);
         //controller.leftTrigger().onTrue(setArm_Home);
@@ -153,27 +157,14 @@ public class RobotContainer {
 
 
         
-        controller.rightTrigger().whileTrue(ca_wheelin_cmd);
-        controller.leftTrigger().whileTrue(ca_wheelout_cmd);
+        controller.povRight().whileTrue(ca_wheelin_cmd);
+        controller.povLeft().whileTrue(ca_wheelout_cmd);
 
-        //seq commandfs
-        /*
-         * controller.y().onTrue(setElevator_L3);
-         * controller.b().onTrue(setElevator_L2);
-         * controller.a().onTrue(setElevator_L1);
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         */
 
         // ---- ELEVATOR BINDINGS ---------------------------------------------------------------------
-        controller.povUp().onTrue(setElevator_PP); // sets elevator to processor position and arm to intake position
-        controller.povRight().onTrue(setElevator_L2);
-        controller.y().onTrue(move_L3_Score);  // Set off chain to score coral and take algae
+        //controller.a().onTrue(move_L1_score); // sets elevator to processor position and arm to intake position
+        controller.b().onTrue(move_L2_score);   // Set off chain to score L2
+        controller.y().onTrue(move_L3_score);  // Set off chain to score coral and take algae
         controller.povDown().onTrue(setElevator_Home); // Set elevator to home position
         controller.leftBumper().onTrue(ca_intake_command);  // Set off chain to get coral from station
         // -------------------------------------------------------------------------------------------

@@ -35,8 +35,8 @@ public final class Elevator_Constants {
     public static final double Player_Coral_Load_Height = 45.2;// Human player station height
 
     
-    public static final double L1_Bottom_Score = 1.0;       // Bottom scoring
-    public static final double L2_Middle_Score = 45.0;       // Middle scoring
+    public static final double L1_Bottom_Score = -5.0;       // Bottom scoring
+    public static final double L2_Middle_Score = 37.9;       // Middle scoring
     public static final double L3_TOP_Score = 99.0;       // Top scoring
     public static final double Intake_LV = 54.0;         // Coral intake level
 
