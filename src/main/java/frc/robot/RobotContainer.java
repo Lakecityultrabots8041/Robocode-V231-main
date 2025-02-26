@@ -24,6 +24,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.coral_arm.Coral_ArmLift_Sub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Ratchet_Climber.Ratchet_Subsystem;
+import frc.robot.subsystems.Ratchet_Climber.Climber_Subsystem;
 import frc.robot.subsystems.algae_arm.Algae_Intake_Sub;
 import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
 import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
@@ -32,7 +34,8 @@ import frc.robot.commands.*; // This Imports all commands from the folder comman
 //import frc.robot.constants.AlgaeArm_Constants;
 import frc.robot.constants.Elevator_Constants;
 import frc.robot.subsystems.coral_arm.Coral_Arm_Intake_Sub;
-
+import frc.robot.constants.Climber_Ratchet_Constants;
+import frc.robot.commands.Ratchet_cmd;
 
 
 public class RobotContainer {
@@ -94,9 +97,12 @@ public class RobotContainer {
     // Setup for elevator commands
     private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, coral_arm, algae_arm);
     private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, coral_arm, algae_arm);
-    //private final Move_L1_Score move_L1_score = new Move_L1_Score(elevator, coral_arm, algae_arm);
+   // private final Move_L1_Score move_L1_score = new Move_L1_Score(elevator, coral_arm, algae_arm);
+    
+    ////--------------------------------------Ratchet SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
+    private final Ratchet_Subsystem ratchet = new Ratchet_Subsystem();
+    private final Ratchet_cmd toggleRatchet = new Ratchet_cmd(ratchet);
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     private final SendableChooser<Command> autoChooser; // *Path Follower*
 
     public RobotContainer() {
@@ -162,12 +168,17 @@ public class RobotContainer {
 
 
         // ---- ELEVATOR BINDINGS ---------------------------------------------------------------------
-        //controller.a().onTrue(move_L1_score); // sets elevator to processor position and arm to intake position
+        //controller.a().onTrue(move_L1_score); // sets elevator to L1 score position
         controller.b().onTrue(move_L2_score);   // Set off chain to score L2
         controller.y().onTrue(move_L3_score);  // Set off chain to score coral and take algae
         controller.povDown().onTrue(setElevator_Home); // Set elevator to home position
         controller.leftBumper().onTrue(ca_intake_command);  // Set off chain to get coral from station
+
         // -------------------------------------------------------------------------------------------
+         // ---- RATCHET BINDINGS ---------------------------------------------------------------------
+        
+        // controller.x().onTrue(toggleRatchet);
+        
 
          // ---- SYSID / FIELD-CENTRIC BINDINGS ----
         controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
