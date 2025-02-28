@@ -11,7 +11,7 @@ public class CA_ctrl_cmd extends Command {
     public CA_ctrl_cmd(Coral_ArmLift_Sub armLiftSubsystem, double targetHeight) {
         this.armLift = armLiftSubsystem;
         this.targetHeight = targetHeight;
-        addRequirements(armLiftSubsystem);  //Ensures that only one command can use the subsystem at a time
+        addRequirements(armLiftSubsystem); 
     } 
     
     @Override
@@ -23,7 +23,7 @@ public class CA_ctrl_cmd extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;  // Run until explicitly interrupted
+        return true;  
     }
 
     @Override

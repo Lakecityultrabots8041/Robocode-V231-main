@@ -15,7 +15,7 @@ public class AA_Control_cmd extends Command {
     public AA_Control_cmd(Algae_ArmLift_Sub armLiftSubsystem, double targetHeight) {
         this.armLift = armLiftSubsystem;
         this.targetHeight = targetHeight;
-        addRequirements(armLiftSubsystem);  //Ensures that only one command can use the subsystem at a time
+        addRequirements(armLiftSubsystem);  
     }
 
 
@@ -38,7 +38,7 @@ public class AA_Control_cmd extends Command {
         } else {
             System.out.println("Arm target height set");
         }
-        // Don't stop the arm - let Motion Magic continue to the target
+        
     }
 
 

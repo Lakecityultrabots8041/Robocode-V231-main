@@ -25,7 +25,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.coral_arm.Coral_ArmLift_Sub;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Ratchet_Climber.Ratchet_Subsystem;
-import frc.robot.subsystems.Ratchet_Climber.Climber_Subsystem;
 import frc.robot.subsystems.algae_arm.Algae_Intake_Sub;
 import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
 import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
@@ -34,8 +33,7 @@ import frc.robot.commands.*; // This Imports all commands from the folder comman
 //import frc.robot.constants.AlgaeArm_Constants;
 import frc.robot.constants.Elevator_Constants;
 import frc.robot.subsystems.coral_arm.Coral_Arm_Intake_Sub;
-import frc.robot.constants.Climber_Ratchet_Constants;
-import frc.robot.commands.Ratchet_cmd;
+
 
 
 public class RobotContainer {
@@ -59,49 +57,45 @@ public class RobotContainer {
     ////--------------------ARM SETUP---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
    
     // Setup for arm subsystem
+    private final Algae_ArmLift_Sub algae_arm = new Algae_ArmLift_Sub();
     private final Algae_Intake_Sub algae_intake = new Algae_Intake_Sub();
     private final Algae_EjectCommand_Sub algae_deploy = new Algae_EjectCommand_Sub();
     
-    
-    private final Algae_ArmLift_Sub algae_arm = new Algae_ArmLift_Sub();
-
-     // Setup for arm lift commands
-     //private final AA_Control_cmd setArm_Home = new AA_Control_cmd(algae_arm, AlgaeArm_Constants.ARM_LOWER_POSITION);
-     //private final AA_Control_cmd setArm_Extended = new AA_Control_cmd(algae_arm, AlgaeArm_Constants.ARM_UPPER_POSITION);
     // Setup for arm intake and eject commands
     private final AA_Intake_cmd AlgaeIntake = new AA_Intake_cmd(algae_intake, 0.5);
     private final AA_Eject_cmd EjectCommand = new AA_Eject_cmd(algae_deploy, -0.5); 
      
-   
-
-
     ////--------------------------------------ELEVATOR SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
     
     // Setup for elevator subsystem    
     private final Elevator_Subsystem elevator = new Elevator_Subsystem();
 
-    // Assign
+    // Assign Home position to elevator with home constant
     private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
-    //private final SetElevatorLevel setElevator_L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
-    //private final SetElevatorLevel setElevator_L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
-    //private final SetElevatorLevel setElevator_PP = new SetElevatorLevel(elevator, Elevator_Constants.Player_Coral_Load_Height);
     
-
+    
+    
+    ////--------------------------------------CORAL ARM SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
     //Declare the Coral Arm subsystem
     private final Coral_ArmLift_Sub coral_arm = new Coral_ArmLift_Sub();
     private final Coral_Arm_Intake_Sub intakeMotor = new Coral_Arm_Intake_Sub();
+
+    // Setup intake and eject commands for Coral
     private final CA_WheelIn_cmd ca_wheelin_cmd = new CA_WheelIn_cmd(intakeMotor, 0.05);
     private final CA_WheelOut_cmd ca_wheelout_cmd = new CA_WheelOut_cmd(intakeMotor, 0.05);
     private final CA_Intake_cmd ca_intake_command = new CA_Intake_cmd(elevator, coral_arm, algae_arm);
 
-    // Setup for elevator commands
+
+    
+    // Setup for Scoring Commands for Coral and Algae using elevator
     private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, coral_arm, algae_arm);
     private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, coral_arm, algae_arm);
    // private final Move_L1_Score move_L1_score = new Move_L1_Score(elevator, coral_arm, algae_arm);
+
     
     ////--------------------------------------Ratchet SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
-    private final Ratchet_Subsystem ratchet = new Ratchet_Subsystem();
-    private final Ratchet_cmd toggleRatchet = new Ratchet_cmd(ratchet);
+    //private final Ratchet_Subsystem ratchet = new Ratchet_Subsystem();
+    // private final Ratchet_set_cmd toggleRatchet =
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
     private final SendableChooser<Command> autoChooser; // *Path Follower*
 
@@ -109,23 +103,18 @@ public class RobotContainer {
         registerNamedCommands(); //Need to have this to register the named commands for auton to use commands in project
 
         // ── Autonomous Display For SMARTBOARD ──
-        autoChooser = AutoBuilder.buildAutoChooser("Auto Test"); // This is the name of the auto mode that will be displayed on the SmartDashboard
+        autoChooser = AutoBuilder.buildAutoChooser("Auto Test_Center Blue"); // This is the name of the auto mode that will be displayed on the SmartDashboard
         SmartDashboard.putData("Auto Mode", autoChooser);
-
-
-        
         configureBindings();
-
     }
 
     // ── Autonomous Option ──
     private void registerNamedCommands() { //Remember a void is a function that does not return anything, this is a statement to register the named commands 
         NamedCommands.registerCommand("MoveElevatorPosition", new SetElevatorLevel(elevator, 1.0));
 
-        // Add more commands here when built in path planner just like above, MoveElevatorPosition is what was named in pathPlanner event mode)
+    
     }
     
-
     public Elevator_Subsystem getElevator() {
         return elevator;
     }
@@ -149,25 +138,16 @@ public class RobotContainer {
         //controller.b().whileTrue(drivetrain.applyRequest(() ->
             //point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))
         
+        // -------- ALGAE Intake/Outake Commands---------------------------------------------------
+        controller.leftTrigger().toggleOnTrue(AlgaeIntake); 
+        controller.rightTrigger().toggleOnFalse(EjectCommand);
 
-
-
-        // -------- ALGAE Arm Command Button ASSIGNMENTS ---------------------------------------------------
-        controller.rightTrigger().whileTrue(AlgaeIntake); 
-        controller.leftTrigger().whileTrue(EjectCommand); 
-
-        //controller.rightTrigger().onTrue(setArm_Extended);
-        //controller.leftTrigger().onTrue(setArm_Home);
         // --------------------------------------------------------------------------------------------
-        //Coral Motor Triggers
-
-
-        
+        //Coral Intake/Outake Commands
         controller.povRight().whileTrue(ca_wheelin_cmd);
         controller.povLeft().whileTrue(ca_wheelout_cmd);
 
-
-        // ---- ELEVATOR BINDINGS ---------------------------------------------------------------------
+        // ---- Scoring Button Controls---------------------------------------------------------------------
         //controller.a().onTrue(move_L1_score); // sets elevator to L1 score position
         controller.b().onTrue(move_L2_score);   // Set off chain to score L2
         controller.y().onTrue(move_L3_score);  // Set off chain to score coral and take algae

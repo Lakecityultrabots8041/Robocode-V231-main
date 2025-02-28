@@ -7,7 +7,7 @@ package frc.robot.constants;
  * constants, and any other constants that are needed.
  */
 
-public class Climber_Ratchet_Constants {
+public class Climber_Constants {
     public static final double kDt = 0.02;
     public static final double kMaxVelocity = 1.75; // these are wblib values not motion magic
     public static final double kMaxAcceleration = 0.75; // these are wblib values not motion magic
@@ -18,18 +18,20 @@ public class Climber_Ratchet_Constants {
     public static final double kG = 1.2;
     public static final double kV = 1.3;
     
+    public static final int CRUISE_VELOCITY = 0; //Change these values to the correct values
+    public static final int ACCELERATION = 0;
+    public static final int JERK = 0;
 
-
+    public static final double CLIMBER_MINIMUM = 0; //Change these values to the correct values
+    public static final double CLIMBER_MAXIMUM = 0;
+    public static final double SPEED = 0.5;
 
 // --------------------Motor IDs--------------------//
      public static final int ClimberMotorID = 89; //placeholders
     // public static final int RatchetID = 98;
 
-    // preset POS
-    public static final double Ratchet_Off = 0.5;
-    public static final double Ratchet_On = 0.6;
 
-    private Climber_Ratchet_Constants() {} // Prevent instantiation
+    private Climber_Constants() {} // Prevent instantiation
 
 
 

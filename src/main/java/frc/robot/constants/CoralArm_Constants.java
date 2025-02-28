@@ -13,7 +13,8 @@ public class CoralArm_Constants {
     public static final double kS = .25;
     public static final double kV = .12;
     public static final double kA = 0.01;
-    public static final double kP = 4.8;
+    //    public static final double kP = 4.8;
+    public static final double kP = 3.9;
     public static final double kI = 0;
     public static final double kd = 0.1;
 
@@ -33,9 +34,9 @@ public class CoralArm_Constants {
     public static final int JERK = 30;
 
     // **Preset arm positions (units must match your sensor's output)**
-    public static final double ARM_LOWER_POSITION = 0.02;
-    public static final double ARM_UPPER_POSITION = -1.12;
-    public static final double Coral_Intake_LV = -1.332;
+    public static final double ARM_LOWER_POSITION = 0.5;
+    public static final double ARM_UPPER_POSITION = -0.44;
+    public static final double Coral_Intake_LV = -0.66;
     
    
 

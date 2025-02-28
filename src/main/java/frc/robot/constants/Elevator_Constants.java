@@ -31,7 +31,7 @@ public final class Elevator_Constants {
 
     // Adjust these values based on robot-field dimensions(in meters) //
    
-    public static final double Home_Position = 1.0;        // returns elevator and arm to park position
+    public static final double Home_Position = 30.9750;        // returns elevator and arm to park position
     public static final double Player_Coral_Load_Height = 45.2;// Human player station height
 
     
