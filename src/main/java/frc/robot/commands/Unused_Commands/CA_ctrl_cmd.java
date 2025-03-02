@@ -1,24 +1,19 @@
-package frc.robot.commands;
+package frc.robot.commands.Unused_Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
+import frc.robot.subsystems.coral_arm.Coral_ArmLift_Sub;
 
+public class CA_ctrl_cmd extends Command {
 
-////--------------------------------------Algae Lift Arm Control Command--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
-
-
-public class AA_Control_cmd extends Command {
-
-    private final Algae_ArmLift_Sub armLift;
+    private final Coral_ArmLift_Sub armLift;
     private final double targetHeight;
 
-    public AA_Control_cmd(Algae_ArmLift_Sub armLiftSubsystem, double targetHeight) {
+    public CA_ctrl_cmd(Coral_ArmLift_Sub armLiftSubsystem, double targetHeight) {
         this.armLift = armLiftSubsystem;
         this.targetHeight = targetHeight;
-        addRequirements(armLiftSubsystem);  
-    }
-
-
+        addRequirements(armLiftSubsystem); 
+    } 
+    
     @Override
     public void initialize() {
         
@@ -28,7 +23,7 @@ public class AA_Control_cmd extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;  // Run until explicitly interrupted
+        return true;  
     }
 
     @Override
@@ -38,8 +33,7 @@ public class AA_Control_cmd extends Command {
         } else {
             System.out.println("Arm target height set");
         }
-        
+        // Don't stop the arm - let Motion Magic continue to the target
     }
-
 
 }

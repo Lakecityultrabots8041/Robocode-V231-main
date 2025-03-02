@@ -34,9 +34,9 @@ public class CoralArm_Constants {
     public static final int JERK = 30;
 
     // **Preset arm positions (units must match your sensor's output)**
-    public static final double ARM_LOWER_POSITION = 0.5;
-    public static final double ARM_UPPER_POSITION = -0.44;
-    public static final double Coral_Intake_LV = -0.66;
+    public static final double ARM_LOWER_POSITION = -0.7293;
+    public static final double ARM_UPPER_POSITION = -1.50;
+    public static final double Coral_Intake_LV = -1.75;
     
    
 

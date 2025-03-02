@@ -44,8 +44,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private double m_lastSimTime;
 
 
-    
-
     public void driveRobotRelative(ChassisSpeeds speeds) {
         this.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds));
     }
@@ -207,6 +205,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
        configureAutoBuilder();
     }
+
     private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();

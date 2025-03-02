@@ -41,7 +41,6 @@ public class Coral_ArmLift_Sub extends SubsystemBase {
          Coral_Motor_config.MotionMagic.MotionMagicAcceleration = CoralArm_Constants.ACCELERATION;
          Coral_Motor_config.MotionMagic.MotionMagicJerk = CoralArm_Constants.JERK;
          Coral_Motor_config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-
          coralArm.getConfigurator().apply(Coral_Motor_config);
     }
 

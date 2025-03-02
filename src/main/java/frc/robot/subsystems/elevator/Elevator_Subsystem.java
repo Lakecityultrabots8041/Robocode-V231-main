@@ -1,7 +1,9 @@
 package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -14,40 +16,40 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator_Subsystem extends SubsystemBase {
 
+
+// ---------- Configure the motors for the elevator subsystem --------------------
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
 
-
-    // Creates a visualizer for the elevator for smartdashboard to log data for elevator
-    private final ElevatorVisualizer visualizer;
-
+//--------------------Control Modes------------------------------------------------------
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
+    private final VelocityVoltage manualMoveControl = new VelocityVoltage(0);
+    //private final NeutralOut stopControl = new NeutralOut();
     
-  public Elevator_Subsystem() {
+    public Elevator_Subsystem() {
      
     // Initialize the elevator subsystem
     leftMotor = new TalonFX(Elevator_Constants.LEFT_MOTOR_ID, "rio");
     rightMotor = new TalonFX(Elevator_Constants.RIGHT_MOTOR_ID, "rio");
-
-    // Initialize the visualizer for the elevator
-    visualizer = new ElevatorVisualizer("elevator", edu.wpi.first.wpilibj.util.Color.kCyan);
-    
     configureMotors();
   }
 
-    public void setTargetHeight(double targetPositionMeters) {
+    // Create the control modes for the elevator with set target height
+
+   /* public void setTargetHeight(double targetPositionMeters) {
        final MotionMagicExpoVoltage mmReq = new MotionMagicExpoVoltage(0);
        leftMotor.setControl(mmReq.withPosition(targetPositionMeters));
-   }
+   }*/
+
+    
    
     private void configureMotors() {
-        // Reset motor configurations
         TalonFXConfiguration leftMotorConfig = new TalonFXConfiguration();
         TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
 
-        // Configure feedback sensor for the left motor
+        // Define Feedback Sensors
         FeedbackConfigs feedbackConfig = new FeedbackConfigs();
-
-        feedbackConfig.SensorToMechanismRatio = 1.0;  // Assuming 1:1, adjust if necessary
+        feedbackConfig.SensorToMechanismRatio = 1.0; 
         leftMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
         // Slot0 PID configuration
@@ -58,15 +60,10 @@ public class Elevator_Subsystem extends SubsystemBase {
         leftMotorConfig.Slot0.kI = Elevator_Constants.kI;
         leftMotorConfig.Slot0.kD = Elevator_Constants.kD;
         
-        /* 
-        *  Slot0 controls "how tightly" the system follows the target
-        *   MotionMagic controls "how smoothly" the target moves from point A to point B
-        */ 
-
+      
         //--------------------Motion Magic Configurations--------------------
 
-        leftMotorConfig.MotionMagic.MotionMagicExpo_kV = 0.12; //Do we need the Expor prarameters if we already have set regular Slot0 pid values?
-        leftMotorConfig.MotionMagic.MotionMagicExpo_kA = 0.1;  //Do we need the Expor prarameters if we already have set regular Slot0 pid values?
+        // Motion Magic Cruise Velocity and Acceleration
         leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = Elevator_Constants.CRUISE_VELOCITY;
         leftMotorConfig.MotionMagic.MotionMagicAcceleration = Elevator_Constants.ACCELERATION;
 
@@ -82,14 +79,78 @@ public class Elevator_Subsystem extends SubsystemBase {
     
         // Invert right motor and set to follow left motor
         rightMotor.setControl(new Follower(leftMotor.getDeviceID(), true));
-
-        // Zero the encoders at startup
+        
         resetEncoders();
     }
 
 
+    // ---- ADDED FOR MANUAL CONTROL ----
+    public void moveUp(double speed) {
+        //We need to check the max height our elevator can go to and set that to constant MAX_HEIGHT
+        if (getCurrentHeight() < Elevator_Constants.MAX_HEIGHT) {
+            //double velocity = Elevator_Constants.CRUISE_VELOCITY * speed;
+           // leftMotor.setControl(manualMoveControl.withVelocity(velocity));
+           leftMotor.set(0.30);
+        } else {
+            stopMotion();
+        }
+    }
+
+    public void moveDown(double speed) {
+        // Please for all that is holy don't let the elevator go below the minimum height
+        if (getCurrentHeight() > Elevator_Constants.MIN_HEIGHT) {
+            //double velocity = -Elevator_Constants.CRUISE_VELOCITY * speed;  //apply (negative) constants to move down
+            //leftMotor.setControl(manualMoveControl.withVelocity(velocity));
+            leftMotor.set(-0.30);
+        } else {
+            stopMotion();
+        }
+    }
+
+    public void moveUpFast(double speed) {
+        //We need to check the max height our elevator can go to and set that to constant MAX_HEIGHT
+        if (getCurrentHeight() < Elevator_Constants.MAX_HEIGHT) {
+            //double velocity = Elevator_Constants.CRUISE_VELOCITY * speed;
+           // leftMotor.setControl(manualMoveControl.withVelocity(velocity));
+           leftMotor.set(0.80);
+        } else {
+            stopMotion();
+        }
+    }
+
+    public void moveDownFast(double speed) {
+        // Please for all that is holy don't let the elevator go below the minimum height
+        if (getCurrentHeight() > Elevator_Constants.MIN_HEIGHT) {
+            //double velocity = -Elevator_Constants.CRUISE_VELOCITY * speed;  //apply (negative) constants to move down
+            //leftMotor.setControl(manualMoveControl.withVelocity(velocity));
+            leftMotor.set(-0.80);
+        } else {
+            stopMotion();
+        }
+    }
+
+    public void stopMotion() {
+        leftMotor.stopMotor();
+    }
+
+
+    public void setTargetPosition(double targetPositionRotations) {
+        double clampedPosition = Math.min(Math.max(targetPositionRotations, Elevator_Constants.MIN_HEIGHT), Elevator_Constants.MAX_HEIGHT);
+        leftMotor.setControl(motionMagicRequest.withPosition(clampedPosition));
+    }
+
+   
     public double getCurrentHeight() {
         return leftMotor.getPosition().getValueAsDouble();
+    }
+
+    public void moveToPreset(double presetPosition) {
+        setTargetPosition(presetPosition);
+    }
+
+    public boolean isAtPosition(double targetPosition) {
+        double currentPosition = getCurrentHeight();
+        return Math.abs(currentPosition - targetPosition) < Elevator_Constants.POSITION_TOLERANCE;
     }
 
     public void resetEncoders() {
@@ -99,13 +160,14 @@ public class Elevator_Subsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Log data for debugging and dashboards
-        Logger.recordOutput("Elevator/Position", getCurrentHeight());
-        Logger.recordOutput("Elevator/Velocity", leftMotor.getVelocity().getValueAsDouble());
-        Logger.recordOutput("Elevator/LeftMotorCurrent", leftMotor.getSupplyCurrent().getValueAsDouble());
-        Logger.recordOutput("Elevator/RightMotorCurrent", rightMotor.getSupplyCurrent().getValueAsDouble());
+       // Logger.recordOutput("Elevator/Position", getCurrentHeight());
+       // Logger.recordOutput("Elevator/Velocity", leftMotor.getVelocity().getValueAsDouble());
+       // Logger.recordOutput("Elevator/LeftMotorCurrent", leftMotor.getSupplyCurrent().getValueAsDouble());
+        //Logger.recordOutput("Elevator/RightMotorCurrent", rightMotor.getSupplyCurrent().getValueAsDouble());
         
         // Call the visualizer to update the height of the elevator periodically
-        visualizer.update(edu.wpi.first.units.Units.Meters.of(getCurrentHeight()));
+        //visualizer.update(edu.wpi.first.units.Units.Meters.of(getCurrentHeight()));
     }
+    
 }
 

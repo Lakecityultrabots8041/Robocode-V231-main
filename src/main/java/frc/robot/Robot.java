@@ -4,36 +4,47 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+
+
+import edu.wpi.first.cameraserver.CameraServer;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.SetElevatorLevel;
+
 
 public class Robot extends LoggedRobot {
 
   
   private Command m_autonomousCommand;
   private final RobotContainer m_robotContainer;
+  
+  // Drive Motor Assignments for bad auton
+  //private final TalonFX flDrive = new TalonFX(10);
+  //private final TalonFX frDrive = new TalonFX(20);
+  //private final TalonFX blDrive = new TalonFX(30);
+  //private final TalonFX brDrive = new TalonFX(40);
 
-  private final Map<String, Command> autoEventMap = new HashMap<>();
+
+  //private final SendableChooser<Command> autoChooser; // *Path Follower*
 
   public Robot() {     
     m_robotContainer = new RobotContainer();
+    CameraServer.startAutomaticCapture();
     configureAutoEvents();
   }
 
-    private void configureAutoEvents(){
-      autoEventMap.put(
-        "MoveElevatorToPosition",
-        new SetElevatorLevel(m_robotContainer.getElevator(), 1.0) // Using meters instead of encoder counts, we will want to set this to l3 height here
-        ); 
-    
-    }
+  private void configureAutoEvents() {
+     // autoEventMap.put("DriveForward", new DriveForward(m_robotContainer.getDriveTrain()));
+    // autoEventMap.put("DriveBackward", new DriveBackward(m_robotContainer.getDriveTrain()));
+    // autoEventMap.put("TurnLeft", new TurnLeft(m_robotContainer.getDriveTrain()));
+    // autoEventMap.put("TurnRight", new TurnRight(m_robotContainer.getDriveTrain()));
+  }
   @Override
   public void robotInit() {
       // Set up the logger for data recording
@@ -42,6 +53,8 @@ public class Robot extends LoggedRobot {
       Logger.addDataReceiver(new WPILOGWriter("/U/logs"));  // Save logs to USB on the RoboRIO
       Logger.addDataReceiver(new NT4Publisher());  // Stream data live to NetworkTables
       Logger.start();
+
+      
   }
 
 
@@ -60,16 +73,28 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledExit() {}
-
+  
   @Override
   public void autonomousInit() {
+
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    
+    //bad auton
+    /*
+    flDrive.set(0.2);
+    frDrive.set(0.2);
+    blDrive.set(0.2);
+    brDrive.set(0.2);
+    */
+  }
 
   @Override
   public void autonomousExit() {}

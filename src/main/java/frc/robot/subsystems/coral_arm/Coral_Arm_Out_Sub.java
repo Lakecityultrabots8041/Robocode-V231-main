@@ -8,27 +8,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CoralArm_Constants;
 
 
-public class Coral_Arm_Intake_Sub extends SubsystemBase {
+public class Coral_Arm_Out_Sub extends SubsystemBase {
     //private final VictorSPX intakeMotor;
-    private final TalonFX intakeMotor;
+    private final TalonFX OutMotor;
 
-    public Coral_Arm_Intake_Sub() {
-        intakeMotor = new TalonFX(CoralArm_Constants.MOTOR_ID);
+    public Coral_Arm_Out_Sub() {
+        OutMotor = new TalonFX(CoralArm_Constants.MOTOR_ID);
     }
 
-    public void intake(double speed) {
+    public void Out(double speed) {
         //intakeMotor.set(ControlMode.PercentOutput, 0.30); // Run the motor at NOT full speed to intake
-        intakeMotor.set(0.15);
+        OutMotor.set(-0.15);
     }
 
     public void stop() {
         //intakeMotor.set(ControlMode.PercentOutput, 0); // Stop the motor
-        intakeMotor.set(0);
-    }
-
-    public void reverse(double speed) {
-        //intakeMotor.set(ControlMode.PercentOutput, -0.30); // Run the motor in reverse to expel
-        intakeMotor.set(-speed);
+        OutMotor.set(0);
     }
 
     @Override
@@ -36,3 +31,4 @@ public class Coral_Arm_Intake_Sub extends SubsystemBase {
         // This method will be called once per scheduler run
     }
 }
+

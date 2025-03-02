@@ -20,7 +20,9 @@ public final class Elevator_Constants {
     //motition magic constants
     public static final int CRUISE_VELOCITY = 80;
     public static final int  ACCELERATION = 160;
-    
+
+    //Acceptable error
+    public static final double POSITION_TOLERANCE = 1.0;
     
     // Motor IDs
     public static final int LEFT_MOTOR_ID = 5;
@@ -32,20 +34,18 @@ public final class Elevator_Constants {
     // Adjust these values based on robot-field dimensions(in meters) //
    
     public static final double Home_Position = 30.9750;        // returns elevator and arm to park position
-    public static final double Player_Coral_Load_Height = 45.2;// Human player station height
-
     
-    public static final double L1_Bottom_Score = -5.0;       // Bottom scoring
+    public static final double L1_Bottom_Score = 20.0;       // Bottom scoring
     public static final double L2_Middle_Score = 37.9;       // Middle scoring
     public static final double L3_TOP_Score = 99.0;       // Top scoring
-    public static final double Intake_LV = 54.0;         // Coral intake level
+    public static final double Intake_LV = 50.0;         // Coral intake level
 
     public static final double Processor_Position = 2.5;   // Safe carrying position with algearm to move to Processor locations
 
 
     // Adjust these values based on your robot's physical constraints
-    public static final double MAX_HEIGHT = 55.0;    //Prevent elevator from going above this height
-    public static final double MIN_HEIGHT = 1.0;   //Prevent elevator from going below this height
+    public static final double MAX_HEIGHT = 111.0;    //Prevent elevator from going above this height
+    public static final double MIN_HEIGHT = 5.0;   //Prevent elevator from going below this height
     public static final double MAX_CURRENT = 40.0;          // Maximum current draw
 
 
