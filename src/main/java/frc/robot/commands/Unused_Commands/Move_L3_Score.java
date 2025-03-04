@@ -23,6 +23,8 @@ public class Move_L3_Score extends SequentialCommandGroup {
 
 addCommands(
 // First move elevator to processor height
+
+
 //new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score),  
 
 // Wait until the elevator is close to target position

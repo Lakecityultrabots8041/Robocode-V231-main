@@ -22,7 +22,7 @@ public class Move_L2_Score extends SequentialCommandGroup {
     Algae_ArmLift_Sub algae_arm) {
 
 addCommands(
-// First move elevator to processor height
+
 //new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score),  
 
 // Wait until the elevator is close to target position

@@ -16,6 +16,24 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator_Subsystem extends SubsystemBase {
 
+ /*    public enum ElevatorPosition {
+        Home,
+        L1,
+        L2,
+        L3,
+        Processor,
+        Station;
+    }
+
+    public enum ElevatorTarget {
+        Home(Elevator_Constants.Home_Position),
+        L1(Elevator_Constants.L1_Bottom_Score),
+        L2(Elevator_Constants.L2_Middle_Score),
+        L3(Elevator_Constants.L3_TOP_Score),
+        Processor(Elevator_Constants.Processor_Position),
+        Station(Elevator_Constants.Station_LV);
+    }
+*/
 
 // ---------- Configure the motors for the elevator subsystem --------------------
     private final TalonFX leftMotor;
@@ -90,7 +108,7 @@ public class Elevator_Subsystem extends SubsystemBase {
         if (getCurrentHeight() < Elevator_Constants.MAX_HEIGHT) {
             //double velocity = Elevator_Constants.CRUISE_VELOCITY * speed;
            // leftMotor.setControl(manualMoveControl.withVelocity(velocity));
-           leftMotor.set(0.30);
+           leftMotor.set(0.40);
         } else {
             stopMotion();
         }
@@ -101,7 +119,7 @@ public class Elevator_Subsystem extends SubsystemBase {
         if (getCurrentHeight() > Elevator_Constants.MIN_HEIGHT) {
             //double velocity = -Elevator_Constants.CRUISE_VELOCITY * speed;  //apply (negative) constants to move down
             //leftMotor.setControl(manualMoveControl.withVelocity(velocity));
-            leftMotor.set(-0.30);
+            leftMotor.set(-0.40);
         } else {
             stopMotion();
         }

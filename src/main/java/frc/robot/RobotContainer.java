@@ -108,6 +108,9 @@ public class RobotContainer {
     //private final CA_Intake_cmd ca_intake_command = new CA_Intake_cmd(elevator, coral_arm, algae_arm);
 
 
+
+
+
     //Don't like having to set speed here, but it's the only way to get the command to work
     // Setup for Scoring Commands for Coral and Algae using elevator
 
@@ -123,7 +126,7 @@ public class RobotContainer {
 
    // private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, coral_arm, algae_arm);
     //private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, coral_arm, algae_arm);
-    //private final Move_L1_Score move_L1_Score  = new Move_L1_Score(elevator, intakeMotor);
+    private final Move_L1_Score move_L1_Score  = new Move_L1_Score(elevator, intakeMotor);
 
     //private final Command m_complexAuto = newComplexAuto(m_robotDrive, m_hatchSubSystem);
 
@@ -131,15 +134,15 @@ public class RobotContainer {
 
     public RobotContainer() {
 
-        //NamedCommands.registerCommand("Smelevator", Move_L1_Score.move_L1_Score());
-        //autoCommand = new PathPlannerAuto("Example Auto");
+        NamedCommands.registerCommand("Smelevator", move_L1_Score);
+        //  = new PathPlannerAuto("Example Auto");
 
-        // autoCommand.isRunning().onTrue(System.out.print("It works"));
+        //autoCommand.isRunning().onTrue(System.out.print("It works"));
 
         // ── Autonomous Display For SMARTBOARD ──
         //autoChooser.addOption("Complex Auto", m_complexAuto);
         //SmartDashboard.putData(autoChooser);
-        autoChooser = AutoBuilder.buildAutoChooser("Robot Left"); // This is the name of the auto mode that will be displayed on the SmartDashboard
+        autoChooser = AutoBuilder.buildAutoChooser("Robot Mid"); // This is the name of the auto mode that will be displayed on the SmartDashboard
         SmartDashboard.putData("Auton Mode", autoChooser);
         // public Command getAutonomousCommand()
             //return autoChooser.getSelected();
@@ -169,7 +172,10 @@ public class RobotContainer {
       
         // --------ALGAE Intake/Outake Commands-\\
         controller.leftTrigger().toggleOnTrue(AlgaeIntake); 
-        controller.rightTrigger().toggleOnFalse(EjectCommand);
+        controller.rightTrigger().whileTrue(EjectCommand);
+
+
+
 
         // ---- ALGAE ARM BUTTONS--------\\
         controller.povLeft().onTrue(algaeArmUp);  //--dpad left button to raise Algae Arm
