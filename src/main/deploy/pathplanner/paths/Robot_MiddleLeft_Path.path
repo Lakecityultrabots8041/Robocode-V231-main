@@ -73,7 +73,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Testing Curving",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 178.75463573323162
