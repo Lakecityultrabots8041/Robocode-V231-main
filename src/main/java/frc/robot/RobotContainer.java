@@ -8,6 +8,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 //import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
@@ -26,24 +27,29 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.generated.TunerConstants;
-
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.algae_arm.Algae_Intake_Sub;
-import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
-import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
+
+
+import frc.robot.Constants.*;
+
+// ---------- SUBSYSTEM IMPORTS ----------
+import frc.robot.subsystems.algae_arm.Algae_Subsystem;
+import frc.robot.subsystems.coral.Coral_Subsystem;
+//import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
+//import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
 import frc.robot.subsystems.elevator.Elevator_Subsystem;
-import frc.robot.constants.AlgaeArm_Constants;
-import frc.robot.subsystems.coral_arm.Coral_Arm_Intake_Sub;
-import frc.robot.subsystems.coral_arm.Coral_Arm_Out_Sub;
-import frc.robot.commands.ELEVATOR.MoveElevatorDown_cmd;
-import frc.robot.commands.ELEVATOR.MoveElevatorUp_cmd;
-import frc.robot.commands.ELEVATOR.MoveElevatorDownFast_cmd;
-import frc.robot.commands.ELEVATOR.MoveElevatorUpFast_cmd;
-import frc.robot.commands.Unused_Commands.CA_WheelOut_cmd;
-import frc.robot.commands.ALGAE_ARM.AA_ArmLift_cmd;
-import frc.robot.commands.Unused_Commands.*;
-import frc.robot.commands.ALGAE_ARM.AA_Eject_cmd;
-import frc.robot.commands.ALGAE_ARM.AA_Intake_cmd;
+
+//import frc.robot.commands.ELEVATOR.MoveElevatorDown_cmd;
+//import frc.robot.commands.ELEVATOR.MoveElevatorUp_cmd;
+//import frc.robot.commands.ELEVATOR.MoveElevatorDownFast_cmd;
+//import frc.robot.commands.ELEVATOR.MoveElevatorUpFast_cmd;
+
+//--------------------COMMANDS-----------------------------
+import frc.robot.commands.UltrabotsCommand;
+//import frc.robot.commands.ALGAE_ARM.AA_ArmLift_cmd;
+//import frc.robot.commands.Unused_Commands.*;
+//import frc.robot.commands.ALGAE_ARM.AA_Eject_cmd;
+//import frc.robot.commands.ALGAE_ARM.AA_Intake_cmd;
 
 
 
@@ -65,97 +71,57 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    ////--------------------ARM SETUP---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
-   
-    // Setup for arm subsystem
-    
-    private final Algae_ArmLift_Sub algae_arm = new Algae_ArmLift_Sub();
-    private final Algae_Intake_Sub algae_intake = new Algae_Intake_Sub();
-    private final Algae_EjectCommand_Sub algae_deploy = new Algae_EjectCommand_Sub();
-      
-       //----------Algae Arm Commands---------------------------------------------------------------------------------------------------------------------------
-    private final AA_ArmLift_cmd algaeArmUp = new AA_ArmLift_cmd(algae_arm, AlgaeArm_Constants.ARM_UPPER_POSITION);
-    private final AA_ArmLift_cmd algaeArmDown = new AA_ArmLift_cmd(algae_arm, AlgaeArm_Constants.ARM_LOWER_POSITION);
-    
-    // Setup for arm intake and eject commands
-    private final AA_Intake_cmd AlgaeIntake = new AA_Intake_cmd(algae_intake, 0.5);
-    private final AA_Eject_cmd EjectCommand = new AA_Eject_cmd(algae_deploy, -0.5); 
-     
-    ////--------------------------------------ELEVATOR SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
-    
-    // Setup for elevator subsystem    
-    private final Elevator_Subsystem elevator = new Elevator_Subsystem();
 
+    //===========================SUBSYSTEMS=======================================================================================================================
+     // Initialize subsystems using the new refactored approach
+    private final Algae_Subsystem algaeSubsystem = new Algae_Subsystem();
+    private final Coral_Subsystem coralSubsystem = new Coral_Subsystem();
+    private final Elevator_Subsystem elevatorSubsystem = new Elevator_Subsystem();
 
-    // Assign Home position to elevator with home constant
-    //private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
-    //The above is used for the old elevator code, ignore unless we revert
-
-
-    
-    
-    ////--------------------------------------CORAL ARM SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
-    //Declare the Coral Arm subsystem
-    //private final Coral_ArmLift_Sub coral_arm = new Coral_ArmLift_Sub();
-
-    //Setup for Coral Arm Commands
-    private final Coral_Arm_Intake_Sub intakeMotor = new Coral_Arm_Intake_Sub();
-    private final Coral_Arm_Out_Sub OutMotor = new Coral_Arm_Out_Sub();
-
-    // Setup intake and eject commands for Coral
-    private final CA_WheelIn_cmd ca_wheelin_cmd = new CA_WheelIn_cmd(OutMotor, 0.10);
-    private final CA_WheelOut_cmd ca_wheelout_cmd = new CA_WheelOut_cmd(intakeMotor, -0.20);
-    //private final CA_Intake_cmd ca_intake_command = new CA_Intake_cmd(elevator, coral_arm, algae_arm);
-
-
-
-
-
-    //Don't like having to set speed here, but it's the only way to get the command to work
-    // Setup for Scoring Commands for Coral and Algae using elevator
-
-    private final MoveElevatorUp_cmd moveElevatorup = new MoveElevatorUp_cmd(elevator, 0.3);
-    private final MoveElevatorDown_cmd moveElevatordown = new MoveElevatorDown_cmd(elevator, 0.3);
-    private final MoveElevatorUpFast_cmd moveElevatorupF = new MoveElevatorUpFast_cmd(elevator, 0.3);
-    private final MoveElevatorDownFast_cmd moveElevatordownF = new MoveElevatorDownFast_cmd(elevator, 0.3);
- 
-
-    //Auton
-    
-
-
-   // private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, coral_arm, algae_arm);
-    //private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, coral_arm, algae_arm);
-    private final Move_L1_Score move_L1_Score  = new Move_L1_Score(elevator, intakeMotor);
-
-    //private final Command m_complexAuto = newComplexAuto(m_robotDrive, m_hatchSubSystem);
-
-    private final SendableChooser<Command> autoChooser; // *Path Follower*
+    //===========================AUTON PATH CALLER=========================================================================================================================/
+    private final SendableChooser<Command> autoChooser; // SmartDashboard chooser for autonomous mode
 
     public RobotContainer() {
 
-        NamedCommands.registerCommand("Smelevator", move_L1_Score);
-        //  = new PathPlannerAuto("Example Auto");
-
-        //autoCommand.isRunning().onTrue(System.out.print("It works"));
-
-        // ── Autonomous Display For SMARTBOARD ──
-        //autoChooser.addOption("Complex Auto", m_complexAuto);
-        //SmartDashboard.putData(autoChooser);
-        autoChooser = AutoBuilder.buildAutoChooser("Robot Mid"); // This is the name of the auto mode that will be displayed on the SmartDashboard
+        //Register commands for autonomous
+        registerAutonomousCommands();
+        autoChooser = AutoBuilder.buildAutoChooser("Robot Mid"); // This is where you change our autonomous mode durning competition, techincain will change this depending on strategy
         SmartDashboard.putData("Auton Mode", autoChooser);
-        // public Command getAutonomousCommand()
-            //return autoChooser.getSelected();
+        
         configureBindings();
+    }
+
+
+    private void registerAutonomousCommands() {
+
+        NamedCommands.registerCommand("Smelevator", // ELI this name is confusing ahhahahah. Can you see about changing it?
+        UltrabotsCommand.autonomousL1Score(elevatorSubsystem, coralSubsystem));
+
+        // Register L1/L2/L3 scoring commands
+        NamedCommands.registerCommand("ScoreL1", //Name you use in pathplanner to call this command
+            UltrabotsCommand.autonomousL1Score(elevatorSubsystem, coralSubsystem));
+        NamedCommands.registerCommand("ScoreL2", // Name you use in pathplanner to call this command
+            UltrabotsCommand.autonomousL2Score(elevatorSubsystem, coralSubsystem));
+        NamedCommands.registerCommand("ScoreL3", // Name you use in pathplanner to call this command
+            UltrabotsCommand.autonomousL3Score(elevatorSubsystem, coralSubsystem));
+            
+        // Register setup positions
+        NamedCommands.registerCommand("StationSetup", // Name you use in pathplanner to call this command
+            UltrabotsCommand.autonomousStationSetup(elevatorSubsystem));
+        NamedCommands.registerCommand("ProcessorHeight", // Name you use in pathplanner to call this command
+            UltrabotsCommand.autonomousProcessorHeight(elevatorSubsystem));
+            
+        // Register algae collection
+        NamedCommands.registerCommand("CollectAlgae", // Name you use in pathplanner to call this command
+            UltrabotsCommand.autonomousCollectAlgae(elevatorSubsystem, algaeSubsystem));
     }
 
     
     public Elevator_Subsystem getElevator() {
-        return elevator;
+        return elevatorSubsystem;
     }
 
 
-    
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -169,45 +135,71 @@ public class RobotContainer {
         );
 
     //------------ALAGE Configurations------------------------------------------------------------------------------------------------------------------------
-      
-        // --------ALGAE Intake/Outake Commands-\\
-        controller.leftTrigger().toggleOnTrue(AlgaeIntake); 
-        controller.rightTrigger().whileTrue(EjectCommand);
 
 
+         // ALGAE Intake/Outake
+        controller.leftTrigger().whileTrue(
+            Commands.run(() -> algaeSubsystem.runIntakeMotors(0.5), algaeSubsystem)
+                .finallyDo((interrupted) -> algaeSubsystem.stopIntakeMotors()));
+                
+        controller.rightTrigger().whileTrue(
+            Commands.run(() -> algaeSubsystem.runEject(0.5), algaeSubsystem)
+                .finallyDo((interrupted) -> algaeSubsystem.stopIntakeMotors()));
 
+        
+        // ALGAE ARM Controls
+        controller.povLeft().onTrue(
+            Commands.runOnce(() -> algaeSubsystem.setTargetHeight(AlgaeArmConstants.ARM_UPPER_POSITION), algaeSubsystem));
+            
+        controller.povRight().onTrue(
+            Commands.runOnce(() -> algaeSubsystem.setTargetHeight(AlgaeArmConstants.ARM_LOWER_POSITION), algaeSubsystem));
 
-        // ---- ALGAE ARM BUTTONS--------\\
-        controller.povLeft().onTrue(algaeArmUp);  //--dpad left button to raise Algae Arm
-        controller.povRight().onTrue(algaeArmDown);  //--dpad right button to lower Algae Arm
     
     //------------CORAL Configurations------------------------------------------------------------------------------------------------------------------------
-        
-        //Coral Intake/Outake Buttons\\
 
+        controller.leftBumper().and(controller.x()).whileTrue(
+            Commands.run(() -> coralSubsystem.intake(0.1), coralSubsystem)
+                .finallyDo((interrupted) -> coralSubsystem.stop()));
+                
+        controller.x().whileTrue(
+            Commands.run(() -> coralSubsystem.spinOut(0.2), coralSubsystem)
+                .finallyDo((interrupted) -> coralSubsystem.stop()));
 
-        controller.leftBumper().and(controller.x()).whileTrue(ca_wheelin_cmd);
-
-        controller.x().whileTrue(ca_wheelout_cmd);
 
     //------------ELEVATOR Button Assignments------------------------------------------------------------------------------------------------------------------------
     
-        controller.povUp().whileTrue(moveElevatorup);
-        controller.leftBumper().and(controller.povUp()).whileTrue(moveElevatorupF);
-        controller.povDown().whileTrue(moveElevatordown);
-        controller.leftBumper().and(controller.povDown()).whileTrue(moveElevatordownF); 
+        controller.povUp().whileTrue(
+            Commands.run(() -> elevatorSubsystem.moveUp(0.3), elevatorSubsystem)
+                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
 
-        // ---- Scoring Button Controls---------------------------------------------------------------------
-        //controller.a().onTrue(move_L1_score); // sets elevator to L1 score position
-        //controller.b().onTrue(move_L2_score);   // Set off chain to score L2
-        //controller.y().onTrue(move_L3_score);  // Set off chain to score coral and take algae
-        
+        controller.povDown().whileTrue(
+            Commands.run(() -> elevatorSubsystem.moveDown(0.3), elevatorSubsystem)
+                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
 
-         // ---- SYSID / FIELD-CENTRIC BINDINGS ----
+         //MOVE ELEVATOR UP FAST        
+        controller.leftBumper().and(controller.povUp()).whileTrue(
+            Commands.run(() -> elevatorSubsystem.moveUpFast(0.3), elevatorSubsystem)
+                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
+
+        //MOVE ELEVATOR DOWN FAST        
+        controller.leftBumper().and(controller.povDown()).whileTrue(
+            Commands.run(() -> elevatorSubsystem.moveDownFast(0.3), elevatorSubsystem)
+                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
+
+
+         // ---- SCORING PRESET BUTTONS ----
+         controller.a().onTrue(UltrabotsCommand.prepareToScoreL1(elevatorSubsystem));
+         controller.b().onTrue(UltrabotsCommand.prepareToScoreL2(elevatorSubsystem));
+         controller.y().onTrue(UltrabotsCommand.prepareToScoreL3(elevatorSubsystem));
+
+
+
+       /*  // ---- SYSID / FIELD-CENTRIC BINDINGS ----
         controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         controller.back().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         controller.start().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        */ 
  
 
         // reset the field-centric heading on right bumper press
@@ -219,13 +211,8 @@ public class RobotContainer {
        public Command getAutonomousCommand() {
         return autoChooser.getSelected();
 
-        //return new PathPlannerAuto("Example Auto") 
+    }
 
-       }
+}
 
-       // public Command getAutonomousCommand() {
-             //return autoChooser.getSelected();
-           // return autoChooser.getSelected();
-        //}
-       }
-    //}
+       
