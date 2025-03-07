@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -165,6 +166,11 @@ public class Elevator_Subsystem extends SubsystemBase {
     public void moveToPreset(double presetPosition) {
         setTargetPosition(presetPosition);
     }
+
+     public void setTargetHeight(double targetPositionMeters) {
+       final MotionMagicExpoVoltage mmReq = new MotionMagicExpoVoltage(0);
+       leftMotor.setControl(mmReq.withPosition(targetPositionMeters));
+   }
 
     public boolean isAtPosition(double targetPosition) {
         double currentPosition = getCurrentHeight();

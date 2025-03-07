@@ -33,17 +33,18 @@ import frc.robot.subsystems.algae_arm.Algae_ArmLift_Sub;
 import frc.robot.subsystems.algae_arm.Algae_EjectCommand_Sub;
 import frc.robot.subsystems.elevator.Elevator_Subsystem;
 import frc.robot.constants.AlgaeArm_Constants;
+import frc.robot.constants.Elevator_Constants;
 import frc.robot.subsystems.coral_arm.Coral_Arm_Intake_Sub;
 import frc.robot.subsystems.coral_arm.Coral_Arm_Out_Sub;
 import frc.robot.commands.ELEVATOR.MoveElevatorDown_cmd;
 import frc.robot.commands.ELEVATOR.MoveElevatorUp_cmd;
 import frc.robot.commands.ELEVATOR.MoveElevatorDownFast_cmd;
 import frc.robot.commands.ELEVATOR.MoveElevatorUpFast_cmd;
-import frc.robot.commands.Unused_Commands.CA_WheelOut_cmd;
 import frc.robot.commands.ALGAE_ARM.AA_ArmLift_cmd;
 import frc.robot.commands.Unused_Commands.*;
 import frc.robot.commands.ALGAE_ARM.AA_Eject_cmd;
 import frc.robot.commands.ALGAE_ARM.AA_Intake_cmd;
+import frc.robot.commands.ELEVATOR.SetElevatorLevel;
 
 
 
@@ -86,6 +87,8 @@ public class RobotContainer {
     // Setup for elevator subsystem    
     private final Elevator_Subsystem elevator = new Elevator_Subsystem();
 
+    private final SetElevatorLevel L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
+     private final SetElevatorLevel L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
 
     // Assign Home position to elevator with home constant
     //private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
@@ -119,13 +122,8 @@ public class RobotContainer {
     private final MoveElevatorUpFast_cmd moveElevatorupF = new MoveElevatorUpFast_cmd(elevator, 0.3);
     private final MoveElevatorDownFast_cmd moveElevatordownF = new MoveElevatorDownFast_cmd(elevator, 0.3);
  
-
-    //Auton
-    
-
-
-   // private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, coral_arm, algae_arm);
-    //private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, coral_arm, algae_arm);
+    private final Move_L3_Score move_L3_score = new Move_L3_Score(elevator, intakeMotor);
+    private final Move_L2_Score move_L2_score = new Move_L2_Score(elevator, intakeMotor);
     private final Move_L1_Score move_L1_Score  = new Move_L1_Score(elevator, intakeMotor);
 
     //private final Command m_complexAuto = newComplexAuto(m_robotDrive, m_hatchSubSystem);
@@ -199,8 +197,8 @@ public class RobotContainer {
 
         // ---- Scoring Button Controls---------------------------------------------------------------------
         //controller.a().onTrue(move_L1_score); // sets elevator to L1 score position
-        //controller.b().onTrue(move_L2_score);   // Set off chain to score L2
-        //controller.y().onTrue(move_L3_score);  // Set off chain to score coral and take algae
+        controller.b().onTrue(L2);   // Set off chain to score L2
+        controller.y().onTrue(L3);  // Set off chain to score coral and take algae
         
 
          // ---- SYSID / FIELD-CENTRIC BINDINGS ----

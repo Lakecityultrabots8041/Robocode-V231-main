@@ -37,9 +37,9 @@ public final class Elevator_Constants {
     public static final double Home_Position = 30.9750;        // returns elevator and arm to park position
     
     public static final double L1_Bottom_Score = 40.0;       // Bottom scoring
-    public static final double L2_Middle_Score = 37.9;       // Middle scoring
-    public static final double L3_TOP_Score = 105.0;       // Top scoring
-    public static final double Station_LV = 50.0;         // Coral intake level 
+    public static final double L2_Middle_Score = 50.226;       // Middle scoring
+    public static final double L3_TOP_Score = 104.91;       // Top scoring
+    public static final double Station_LV = 11.33;         // Coral intake level 
     // lets rename the above to something that states player or human involved
 
     public static final double Processor_Position = 10.0;   // Safe carrying position with algearm to move to Processor locations

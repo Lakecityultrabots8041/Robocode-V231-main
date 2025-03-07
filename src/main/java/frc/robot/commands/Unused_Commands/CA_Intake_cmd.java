@@ -1,4 +1,4 @@
-package frc.robot.commands.Unused_Commands;
+/* package frc.robot.commands.Unused_Commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -12,7 +12,7 @@ import frc.robot.subsystems.elevator.Elevator_Subsystem;
 /**
  * A command sequence that moves the elevator to processor height
  * and then extends the arm to scoring position.
- */
+
 
 
 public class CA_Intake_cmd extends SequentialCommandGroup {
@@ -41,4 +41,4 @@ Math.abs(coral_arm.getCurrentHeight() - CoralArm_Constants.Coral_Intake_LV) < 0.
 }
 }
     
-    
+    */
