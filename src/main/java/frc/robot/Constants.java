@@ -50,6 +50,8 @@ public final class Constants {
         // Manual control speeds
         public static final double MANUAL_UP_SPEED = 0.5;      // Speed for manual control
         public static final double MANUAL_DOWN_SPEED = 0.5;    // Speed for manual control
+        public static final double MANUAL_UP_FAST_SPEED = 1.5; // Speed for manual control
+        public static final double MANUAL_DOWN_FAST_SPEED = 1.5; // Speed for manual control
         
         // Other constants
         public static final double GEAR_RATIO = 40.0;          // 40:1 gear ratio
@@ -93,7 +95,7 @@ public final class Constants {
         // PID Constants 
         public static final double kP = 30;
         public static final double kI = 0;
-        public static final double kd = 0.1;
+        public static final double kD = 0.1;
         public static final double kS = 2.0;
         public static final double kV = 4.5;
         public static final double kA = 0.01;

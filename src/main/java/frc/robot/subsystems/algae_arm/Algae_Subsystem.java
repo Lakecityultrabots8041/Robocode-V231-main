@@ -34,8 +34,8 @@ public class Algae_Subsystem extends SubsystemBase {
         liftMotor = new TalonFX(AlgaeArmConstants.MOTOR_ID, "rio");
         
         // Initialize intake motors with correct CAN IDs
-        leftIntakeMotor = new WPI_VictorSPX(4);
-        rightIntakeMotor = new WPI_VictorSPX(2);
+        leftIntakeMotor = new WPI_VictorSPX(4); // call in contants file
+        rightIntakeMotor = new WPI_VictorSPX(2); // call in contants file
         
         // Build constructor for motors
         configureLiftMotor();
@@ -59,7 +59,7 @@ public class Algae_Subsystem extends SubsystemBase {
         liftConfig.Slot0.kA = AlgaeArmConstants.kA;
         liftConfig.Slot0.kP = AlgaeArmConstants.kP;
         liftConfig.Slot0.kI = AlgaeArmConstants.kI;
-        liftConfig.Slot0.kD = AlgaeArmConstants.kd; 
+        liftConfig.Slot0.kD = AlgaeArmConstants.kD; 
         liftConfig.Slot0.kG = AlgaeArmConstants.kG;
         liftConfig.MotionMagic.MotionMagicCruiseVelocity = AlgaeArmConstants.CRUISE_VELOCITY;
         liftConfig.MotionMagic.MotionMagicAcceleration = AlgaeArmConstants.ACCELERATION;
@@ -103,8 +103,8 @@ public class Algae_Subsystem extends SubsystemBase {
      * @param speed The speed to run the motors at (-1.0 to 1.0).
      */
     public void runIntakeMotors(double speed) {
-        leftIntakeMotor.set(speed);
-        rightIntakeMotor.set(speed);
+        leftIntakeMotor.set(ControlMode.PercentOutput, speed);
+        rightIntakeMotor.set(ControlMode.PercentOutput, speed);
     }
 
     /**

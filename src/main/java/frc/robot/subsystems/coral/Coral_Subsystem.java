@@ -4,6 +4,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralConstants;
 import org.littletonrobotics.junction.Logger;
@@ -84,20 +86,6 @@ public class Coral_Subsystem extends SubsystemBase {
     }
     
     
-    public void stopAll() {
-        stop();
-    }
-    
-    
-    public void stopIntake() {
-        stop();
-    }
-    
-   
-    public void stopOutake() {
-        stop();
-    }
-    
     /**
      * Get the current motor speed
      * @return The current speed (-1.0 to 1.0)
@@ -105,6 +93,21 @@ public class Coral_Subsystem extends SubsystemBase {
     public double getSpeed() {
         return coralMotor.get();
     }
+
+
+    public Command getIntakeCommand(double speed) {
+    return Commands.run(() -> intake(speed), this)
+        .finallyDo((interrupted) -> stop())
+        .withName("Coral Intake");
+    }
+
+    public Command getOutakeCommand(double speed) {
+    return Commands.run(() -> spinOut(speed), this)
+        .finallyDo((interrupted) -> stop())
+        .withName("Coral Outake");
+    }
+
+
     
     @Override
     public void periodic() {

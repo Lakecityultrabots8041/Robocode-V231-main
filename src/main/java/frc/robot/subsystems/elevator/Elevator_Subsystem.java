@@ -33,15 +33,16 @@ public class Elevator_Subsystem extends SubsystemBase {
     private final VelocityVoltage manualMoveControl = new VelocityVoltage(0); // Used for manual control for up and down where you want to move a constant speed rather then position target. 
 
 
-    // Lets create the elevator subsystem
-
     public Elevator_Subsystem() {
      
     //Define Motors here\\
     leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, "rio");
     rightMotor = new TalonFX(ElevatorConstants.RIGHT_MOTOR_ID, "rio");
-    configureTalons(); // Configure the talons for the elevator
 
+    configureElevTalons(); // Configure the talons for the elevator
+
+
+    // Set the start position to the home position
     targetPosition = ElevatorConstants.HOME_POSITION;
 
     //Put the elevator on the dashboard
@@ -53,17 +54,14 @@ public class Elevator_Subsystem extends SubsystemBase {
     
    // Now lets configure the actual motors and do some neat things
 
-    private void configureTalons() {
+    private void configureElevTalons() {
         TalonFXConfiguration leftMotorConfig = new TalonFXConfiguration();
         TalonFXConfiguration rightMotorConfig = new TalonFXConfiguration();
 
-        //Configure PID
+        //Configure PIDs for motors
         leftMotorConfig.Slot0.kP = ElevatorConstants.kP;
         leftMotorConfig.Slot0.kI = ElevatorConstants.kI;
         leftMotorConfig.Slot0.kD = ElevatorConstants.kD;
-
-
-        //Configure Feed Forward
         leftMotorConfig.Slot0.kS = ElevatorConstants.kS;
         leftMotorConfig.Slot0.kV = ElevatorConstants.kV;
         leftMotorConfig.Slot0.kA = ElevatorConstants.kA;
@@ -72,10 +70,6 @@ public class Elevator_Subsystem extends SubsystemBase {
         //Configure Feedback Sensor inside motors
         leftMotorConfig.Feedback.SensorToMechanismRatio = 40.0; // 40:1 gear ratio
         leftMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor; // Use the encoder on the motor
-       
-        
-      
-        //--------------------Motion Magic Configurations--------------------
 
         // Motion Magic Cruise Velocity and Acceleration
         leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
@@ -102,7 +96,8 @@ public class Elevator_Subsystem extends SubsystemBase {
     
         // Invert right motor and set to follow left motor
         rightMotor.setControl(new Follower(leftMotor.getDeviceID(), true));
-        leftMotor.setPosition(0.0);
+
+        leftMotor.setPosition(0.0); // is this needed?
         Logger.recordOutput("Elevator/MotorConfigured", true);
     }
 
@@ -185,25 +180,7 @@ public class Elevator_Subsystem extends SubsystemBase {
  }
     
     /**
-     * Moves the elevator up at a faster speed.
-     * 
-     * @param speed The speed multiplier (0 to 1)
-     */
-    public void moveUpFast(double speed) {
-        moveUp(speed * 1.5); // 50% faster than normal
-    }
-    
-    /**
-     * Moves the elevator down at a faster speed.
-     * 
-     * @param speed The speed multiplier (0 to 1)
-     */
-    public void moveDownFast(double speed) {
-        moveDown(speed * 1.5); // 50% faster than normal
-    }
-    
-    /**
-     * Stops all elevator motion.
+     * Stops all elevator motion. This is used in case holdPosition doesn't work. 
      */
     public void stopMotion() {
         leftMotor.stopMotor();
@@ -238,7 +215,7 @@ public boolean isAtPosition(double targetPosition) {
 }
 
 public void resetEncoders() {
-    leftMotor.set(0.0);
+    leftMotor.setPosition(0.0); // Changed to setPosition instead of set(speed)
 }
     
 //--------------------------------------------------------------------------
@@ -252,8 +229,8 @@ public void resetEncoders() {
      */
     public Command getManualUpCommand() {
         return Commands.run(() -> moveUp(ElevatorConstants.MANUAL_UP_SPEED), this)
-            .finallyDo((interrupted) -> stopMotion())
-            .withName("Elev Manual Up");
+            .finallyDo((interrupted) -> holdPosition())// When button assigned is release, it calls this finallyDo to stop the motor
+            .withName("Elev Manual Up"); // this then puts the command on the dashboard for logging purposes
     }
     
     /**
@@ -263,10 +240,24 @@ public void resetEncoders() {
      */
     public Command getManualDownCommand() {
         return Commands.run(() -> moveDown(ElevatorConstants.MANUAL_DOWN_SPEED), this)
-            .finallyDo((interrupted) -> stopMotion())
+            .finallyDo((interrupted) -> holdPosition())
             .withName("Elev Manual Down");
     }
-    
+
+
+    public Command getManualUpFastCommand() {
+        return Commands.run(() -> moveUp(ElevatorConstants.MANUAL_UP_FAST_SPEED), this)
+            .finallyDo((interrupted) -> holdPosition())
+            .withName("Elev Manual Up Fast");
+    }
+
+
+    public Command getManualDownFastCommand() {
+        return Commands.run(() -> moveUp(ElevatorConstants.MANUAL_DOWN_FAST_SPEED), this)
+            .finallyDo((interrupted) -> holdPosition())
+            .withName("Elev Manual Up Fast");
+    }
+
     /**
      * Gets a command that holds the elevator at its current position.
      * 

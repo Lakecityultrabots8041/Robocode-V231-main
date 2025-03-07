@@ -94,7 +94,7 @@ public class RobotContainer {
 
     private void registerAutonomousCommands() {
 
-        NamedCommands.registerCommand("Smelevator", // ELI this name is confusing ahhahahah. Can you see about changing it?
+        NamedCommands.registerCommand("Smelevator", // Recommened to change this to call elevator or something, score l1 and launch coral is what should happen. Drives straight at reef. 
         UltrabotsCommand.autonomousL1Score(elevatorSubsystem, coralSubsystem));
 
         // Register L1/L2/L3 scoring commands
@@ -123,8 +123,6 @@ public class RobotContainer {
 
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
         // ---- DRIVETRAIN BINDINGS -----------------------------------------------------------------------------------------------------------------------------
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
@@ -138,59 +136,37 @@ public class RobotContainer {
 
 
          // ALGAE Intake/Outake
-        controller.leftTrigger().whileTrue(
-            Commands.run(() -> algaeSubsystem.runIntakeMotors(0.5), algaeSubsystem)
-                .finallyDo((interrupted) -> algaeSubsystem.stopIntakeMotors()));
+        controller.leftTrigger().whileTrue(algaeSubsystem.intakeCommand(0.5));
                 
-        controller.rightTrigger().whileTrue(
-            Commands.run(() -> algaeSubsystem.runEject(0.5), algaeSubsystem)
-                .finallyDo((interrupted) -> algaeSubsystem.stopIntakeMotors()));
+        controller.rightTrigger().whileTrue(algaeSubsystem.ejectCommand(0.5));
 
-        
+
         // ALGAE ARM Controls
-        controller.povLeft().onTrue(
-            Commands.runOnce(() -> algaeSubsystem.setTargetHeight(AlgaeArmConstants.ARM_UPPER_POSITION), algaeSubsystem));
-            
-        controller.povRight().onTrue(
-            Commands.runOnce(() -> algaeSubsystem.setTargetHeight(AlgaeArmConstants.ARM_LOWER_POSITION), algaeSubsystem));
+        controller.povLeft().onTrue(algaeSubsystem.setArmHeightCommand(AlgaeArmConstants.ARM_STOWED_POSITION));
+        controller.povRight().onTrue(algaeSubsystem.setArmHeightCommand(AlgaeArmConstants.ARM_LOWER_POSITION));
 
     
     //------------CORAL Configurations------------------------------------------------------------------------------------------------------------------------
 
-        controller.leftBumper().and(controller.x()).whileTrue(
-            Commands.run(() -> coralSubsystem.intake(0.1), coralSubsystem)
-                .finallyDo((interrupted) -> coralSubsystem.stop()));
+        controller.leftBumper().and(controller.x()).whileTrue(coralSubsystem.getIntakeCommand(0.2)); // set speed either here or in Constants
                 
-        controller.x().whileTrue(
-            Commands.run(() -> coralSubsystem.spinOut(0.2), coralSubsystem)
-                .finallyDo((interrupted) -> coralSubsystem.stop()));
+        controller.x().whileTrue(coralSubsystem.getOutakeCommand(0.2)); // Set speed either here or in Constants
 
 
     //------------ELEVATOR Button Assignments------------------------------------------------------------------------------------------------------------------------
     
-        controller.povUp().whileTrue(
-            Commands.run(() -> elevatorSubsystem.moveUp(0.3), elevatorSubsystem)
-                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
+        controller.povUp().whileTrue(elevatorSubsystem.getManualUpCommand());
+        controller.povDown().whileTrue(elevatorSubsystem.getManualDownCommand());
 
-        controller.povDown().whileTrue(
-            Commands.run(() -> elevatorSubsystem.moveDown(0.3), elevatorSubsystem)
-                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
-
-         //MOVE ELEVATOR UP FAST        
-        controller.leftBumper().and(controller.povUp()).whileTrue(
-            Commands.run(() -> elevatorSubsystem.moveUpFast(0.3), elevatorSubsystem)
-                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
-
-        //MOVE ELEVATOR DOWN FAST        
-        controller.leftBumper().and(controller.povDown()).whileTrue(
-            Commands.run(() -> elevatorSubsystem.moveDownFast(0.3), elevatorSubsystem)
-                .finallyDo((interrupted) -> elevatorSubsystem.stopMotion()));
+        // Faster Manual Elevator Control      
+        controller.leftBumper().and(controller.povUp()).whileTrue(elevatorSubsystem.getManualUpFastCommand());        
+        controller.leftBumper().and(controller.povDown()).whileTrue(elevatorSubsystem.getManualDownFastCommand());
 
 
          // ---- SCORING PRESET BUTTONS ----
-         controller.a().onTrue(UltrabotsCommand.prepareToScoreL1(elevatorSubsystem));
-         controller.b().onTrue(UltrabotsCommand.prepareToScoreL2(elevatorSubsystem));
-         controller.y().onTrue(UltrabotsCommand.prepareToScoreL3(elevatorSubsystem));
+        controller.a().onTrue(UltrabotsCommand.prepareToScoreL1(elevatorSubsystem));
+        controller.b().onTrue(UltrabotsCommand.prepareToScoreL2(elevatorSubsystem));
+        controller.y().onTrue(UltrabotsCommand.prepareToScoreL3(elevatorSubsystem));
 
 
 
