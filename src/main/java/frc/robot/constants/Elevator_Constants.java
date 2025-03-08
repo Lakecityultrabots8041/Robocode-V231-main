@@ -37,16 +37,19 @@ public final class Elevator_Constants {
     public static final double Home_Position = 30.9750;        // returns elevator and arm to park position
     
     public static final double L1_Bottom_Score = 40.0;       // Bottom scoring
-    public static final double L2_Middle_Score = 50.226;       // Middle scoring
-    public static final double L3_TOP_Score = 104.91;       // Top scoring
-    public static final double Station_LV = 11.33;         // Coral intake level 
-    // lets rename the above to something that states player or human involved
+    public static final double AlGAE_L2_SCORE = 88.0; // AlGAE SCORING
+    public static final double ALGAE_L3_SCORE = 130.0; // ALGAE SCORING 
+    public static final double L2_Middle_Score = 50.226; // Middle scoring
+    public static final double L3_TOP_Score = 104.91; // Top scoring
+    public static final double Station_LV = 11.33; // Coral intake level 
 
-    public static final double Processor_Position = 10.0;   // Safe carrying position with algearm to move to Processor locations
 
+    public static final double Processor_Position = 11.9;   // Safe carrying position with algearm to move to Processor locations
+
+    
 
     // Adjust these values based on your robot's physical constraints
-    public static final double MAX_HEIGHT = 111.0;    //Prevent elevator from going above this height
+    public static final double MAX_HEIGHT = 134;    //Prevent elevator from going above this height
     public static final double MIN_HEIGHT = 5.0;   //Prevent elevator from going below this height
     public static final double MAX_CURRENT = 40.0;          // Maximum current draw
 

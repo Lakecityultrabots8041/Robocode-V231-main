@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New mid Path"
+            "pathName": "M_Right_Rotate"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Smelevator"
           }
         }
       ]

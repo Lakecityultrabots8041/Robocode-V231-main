@@ -44,6 +44,7 @@ import frc.robot.commands.ALGAE_ARM.AA_ArmLift_cmd;
 import frc.robot.commands.Unused_Commands.*;
 import frc.robot.commands.ALGAE_ARM.AA_Eject_cmd;
 import frc.robot.commands.ALGAE_ARM.AA_Intake_cmd;
+import frc.robot.commands.Auton_Commands.AUTON_CMD;
 import frc.robot.commands.ELEVATOR.SetElevatorLevel;
 
 
@@ -88,8 +89,14 @@ public class RobotContainer {
     private final Elevator_Subsystem elevator = new Elevator_Subsystem();
 
     private final SetElevatorLevel L2 = new SetElevatorLevel(elevator, Elevator_Constants.L2_Middle_Score);
-     private final SetElevatorLevel L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
+    private final SetElevatorLevel L3 = new SetElevatorLevel(elevator, Elevator_Constants.L3_TOP_Score);
 
+    private final SetElevatorLevel ALG_L2 = new SetElevatorLevel(elevator, Elevator_Constants.AlGAE_L2_SCORE);
+    private final SetElevatorLevel ALG_L3 = new SetElevatorLevel(elevator, Elevator_Constants.ALGAE_L3_SCORE);
+
+    private final SetElevatorLevel Proc_LVL = new SetElevatorLevel(elevator, Elevator_Constants.Processor_Position);
+    
+    
     // Assign Home position to elevator with home constant
     //private final SetElevatorLevel setElevator_Home = new SetElevatorLevel(elevator, Elevator_Constants.Home_Position);
     //The above is used for the old elevator code, ignore unless we revert
@@ -128,11 +135,16 @@ public class RobotContainer {
 
     //private final Command m_complexAuto = newComplexAuto(m_robotDrive, m_hatchSubSystem);
 
+   
+    private final AUTON_CMD testauto;
     private final SendableChooser<Command> autoChooser; // *Path Follower*
+    
 
     public RobotContainer() {
 
-        NamedCommands.registerCommand("Smelevator", move_L1_Score);
+        testauto = new AUTON_CMD(elevator, intakeMotor);
+
+        NamedCommands.registerCommand("Smelevator", testauto);
         //  = new PathPlannerAuto("Example Auto");
 
         //autoCommand.isRunning().onTrue(System.out.print("It works"));
@@ -140,7 +152,7 @@ public class RobotContainer {
         // ── Autonomous Display For SMARTBOARD ──
         //autoChooser.addOption("Complex Auto", m_complexAuto);
         //SmartDashboard.putData(autoChooser);
-        autoChooser = AutoBuilder.buildAutoChooser("Robot Mid"); // This is the name of the auto mode that will be displayed on the SmartDashboard
+        autoChooser = AutoBuilder.buildAutoChooser("Robot MidLeft"); // This is the name of the auto mode that will be displayed on the SmartDashboard
         SmartDashboard.putData("Auton Mode", autoChooser);
         // public Command getAutonomousCommand()
             //return autoChooser.getSelected();
@@ -160,7 +172,7 @@ public class RobotContainer {
         // ---- DRIVETRAIN BINDINGS -----------------------------------------------------------------------------------------------------------------------------
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 3.5) // Adjust / 3 to change speed
+                drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 3) // Adjust / 3 to change speed
                     .withVelocityY(-controller.getLeftX() * MaxSpeed / 3) // Adjust / 2 to change speed
                     .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
@@ -170,13 +182,14 @@ public class RobotContainer {
       
         // --------ALGAE Intake/Outake Commands-\\
         controller.leftTrigger().toggleOnTrue(AlgaeIntake); 
-        controller.rightTrigger().whileTrue(EjectCommand);
+        //controller.rightTrigger().whileTrue(EjectCommand);
 
 
 
 
         // ---- ALGAE ARM BUTTONS--------\\
         controller.povLeft().onTrue(algaeArmUp);  //--dpad left button to raise Algae Arm
+        //controller.leftBumper().and(controller.b()).whileTrue(ALG_L2);
         controller.povRight().onTrue(algaeArmDown);  //--dpad right button to lower Algae Arm
     
     //------------CORAL Configurations------------------------------------------------------------------------------------------------------------------------
@@ -199,6 +212,10 @@ public class RobotContainer {
         //controller.a().onTrue(move_L1_score); // sets elevator to L1 score position
         controller.b().onTrue(L2);   // Set off chain to score L2
         controller.y().onTrue(L3);  // Set off chain to score coral and take algae
+        controller.leftBumper().and(controller.b()).whileTrue(ALG_L2);
+        controller.leftBumper().and(controller.y()).whileTrue(ALG_L3);
+        controller.leftBumper().and(controller.rightTrigger()).whileTrue(Proc_LVL);
+
         
 
          // ---- SYSID / FIELD-CENTRIC BINDINGS ----
