@@ -38,7 +38,7 @@ public class AlgaeArm_Constants {
 
     // arm position for L3 to reach higher algae
     public static final double ARM_UPPER_POSITION_L3 = 3.119;
-    
+    //possibly make higher algae position a preset position*********
 
      // Add any preset positions or tolerances here as needed
     private AlgaeArm_Constants() {} // Prevent instantiation

@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Right"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "MoveElevatorToPosition"
+            "name": "Smelevator"
           }
         }
       ]

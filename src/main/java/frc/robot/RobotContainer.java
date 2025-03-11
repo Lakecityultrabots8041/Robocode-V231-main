@@ -136,26 +136,29 @@ public class RobotContainer {
     //private final Command m_complexAuto = newComplexAuto(m_robotDrive, m_hatchSubSystem);
 
    
-    private final AUTON_CMD testauto;
-    private final SendableChooser<Command> autoChooser; // *Path Follower*
-    
+    private final AUTON_CMD testauto; // change this to reflect main AUTON
+    private final AUTON_CMD goleftauto; // use this as a template to define what we want
+    private final AUTON_CMD gorightauto; // use this as a template to define what we want
+    //private final SendableChooser<Command> autoChooser; // *Path Follower*
+    private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
     public RobotContainer() {
 
         testauto = new AUTON_CMD(elevator, intakeMotor);
+        goleftauto = new AUTON_CMD(elevator, intakeMotor);
+        gorightauto = new AUTON_CMD(elevator, intakeMotor);
+
 
         NamedCommands.registerCommand("Smelevator", testauto);
-        //  = new PathPlannerAuto("Example Auto");
 
-        //autoCommand.isRunning().onTrue(System.out.print("It works"));
-
-        // ── Autonomous Display For SMARTBOARD ──
-        //autoChooser.addOption("Complex Auto", m_complexAuto);
-        //SmartDashboard.putData(autoChooser);
-        autoChooser = AutoBuilder.buildAutoChooser("Robot MidLeft"); // This is the name of the auto mode that will be displayed on the SmartDashboard
-        SmartDashboard.putData("Auton Mode", autoChooser);
-        // public Command getAutonomousCommand()
-            //return autoChooser.getSelected();
+        m_chooser.setDefaultOption("Robot Mid", testauto);
+        m_chooser.addOption("Robot MidLeft", goleftauto);
+        m_chooser.addOption("Robot MidRight", gorightauto);
+        //m_chooser.addOption("Robot Left", testauto);
+       // m_chooser.addOption("Robot Right", testauto);
+       // m_chooser.addOption("Big Red", testauto);
+        SmartDashboard.putData("Auton Mode", m_chooser);
+       
         configureBindings();
     }
 
@@ -232,15 +235,10 @@ public class RobotContainer {
 
 
        public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-
-        //return new PathPlannerAuto("Example Auto") 
-
+        return m_chooser.getSelected();
+        
        }
 
-       // public Command getAutonomousCommand() {
-             //return autoChooser.getSelected();
-           // return autoChooser.getSelected();
-        //}
+     
        }
-    //}
+
