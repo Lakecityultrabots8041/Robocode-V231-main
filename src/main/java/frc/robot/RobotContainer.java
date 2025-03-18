@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 // ------  SMART DASHBOARD IMPORTS  ------
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -78,7 +79,8 @@ public class RobotContainer {
        //----------Algae Arm Commands---------------------------------------------------------------------------------------------------------------------------
     private final AA_ArmLift_cmd algaeArmUp = new AA_ArmLift_cmd(algae_arm, AlgaeArm_Constants.ARM_UPPER_POSITION);
     private final AA_ArmLift_cmd algaeArmDown = new AA_ArmLift_cmd(algae_arm, AlgaeArm_Constants.ARM_LOWER_POSITION);
-    
+    private final AA_ArmLift_cmd algaeArmL3 = new AA_ArmLift_cmd(algae_arm, AlgaeArm_Constants.ARM_UPPER_POSITION_L3);
+
     // Setup for arm intake and eject commands
     private final AA_Intake_cmd AlgaeIntake = new AA_Intake_cmd(algae_intake, 0.5);
     private final AA_Eject_cmd EjectCommand = new AA_Eject_cmd(algae_deploy, -0.5); 
@@ -137,27 +139,42 @@ public class RobotContainer {
 
    
     private final AUTON_CMD testauto; // change this to reflect main AUTON
-    private final AUTON_CMD goleftauto; // use this as a template to define what we want
-    private final AUTON_CMD gorightauto; // use this as a template to define what we want
+    //private final AUTON_CMD goleftauto; // use this as a template to define what we want
+    //private final AUTON_CMD gorightauto; // use this as a template to define what we want
+    //private final AUTON_CMD startleftauto;
+    private final AUTON_CMD startrightauto;
+    //private final AUTON_CMD developmentalauto;
     //private final SendableChooser<Command> autoChooser; // *Path Follower*
-    private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+    private final SendableChooser<Command> autoChooser; // *Path Follower*
+    //private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
     public RobotContainer() {
-
+        
+        autoChooser = AutoBuilder.buildAutoChooser("Robot Right");
         testauto = new AUTON_CMD(elevator, intakeMotor);
-        goleftauto = new AUTON_CMD(elevator, intakeMotor);
-        gorightauto = new AUTON_CMD(elevator, intakeMotor);
+        //goleftauto = new AUTON_CMD(elevator, intakeMotor);
+        //gorightauto = new AUTON_CMD(elevator, intakeMotor);
+        //startleftauto = new AUTON_CMD(elevator, intakeMotor);
+        startrightauto = new AUTON_CMD(elevator, intakeMotor);
+        //developmentalauto = new AUTON_CMD(elevator, intakeMotor);
 
 
         NamedCommands.registerCommand("Smelevator", testauto);
+        //NamedCommands.registerCommand("moveL2", move_L2_score);
+        //NamedCommands.registerCommand("scoreCoral", ca_wheelout_cmd);
+        //NamedCommands.registerCommand("Smelevator", goleftauto);
+        //NamedCommands.registerCommand("Smelevator", gorightauto);
+        //NamedCommands.registerCommand("Smelevator", startleftauto);
+        //NamedCommands.registerCommand("Smelevator", startrightauto);
+        //NamedCommands.registerCommand("Smelevator", developmentalauto);
 
-        m_chooser.setDefaultOption("Robot Mid", testauto);
-        m_chooser.addOption("Robot MidLeft", goleftauto);
-        m_chooser.addOption("Robot MidRight", gorightauto);
-        //m_chooser.addOption("Robot Left", testauto);
-       // m_chooser.addOption("Robot Right", testauto);
-       // m_chooser.addOption("Big Red", testauto);
-        SmartDashboard.putData("Auton Mode", m_chooser);
+        //m_chooser.setDefaultOption("Robot MidLeft", testauto);
+        //m_chooser.addOption("Robot MidLeft", goleftauto);
+        //m_chooser.addOption("Robot MidRight", gorightauto);
+        //m_chooser.addOption("Robot Left", startleftauto);
+        //m_chooser.addOption("Robot Right", startrightauto);
+        //m_chooser.addOption("Big Red", developmentalauto);
+        SmartDashboard.putData("Auton Mode", autoChooser);
        
         configureBindings();
     }
@@ -175,8 +192,8 @@ public class RobotContainer {
         // ---- DRIVETRAIN BINDINGS -----------------------------------------------------------------------------------------------------------------------------
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 3) // Adjust / 3 to change speed
-                    .withVelocityY(-controller.getLeftX() * MaxSpeed / 3) // Adjust / 2 to change speed
+                drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 2.5) // Adjust / 3 to change speed
+                    .withVelocityY(-controller.getLeftX() * MaxSpeed / 2.5) // Adjust / 2 to change speed
                     .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -194,6 +211,8 @@ public class RobotContainer {
         controller.povLeft().onTrue(algaeArmUp);  //--dpad left button to raise Algae Arm
         //controller.leftBumper().and(controller.b()).whileTrue(ALG_L2);
         controller.povRight().onTrue(algaeArmDown);  //--dpad right button to lower Algae Arm
+        controller.a().onTrue(algaeArmL3); 
+        
     
     //------------CORAL Configurations------------------------------------------------------------------------------------------------------------------------
         
@@ -235,7 +254,7 @@ public class RobotContainer {
 
 
        public Command getAutonomousCommand() {
-        return m_chooser.getSelected();
+        return autoChooser.getSelected();
         
        }
 

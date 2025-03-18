@@ -33,7 +33,7 @@ public class AUTON_CMD extends SequentialCommandGroup {
             // Wait until elevator is near the target position
             new WaitUntilCommand(() -> {
                 double currentHeight = elevator.getCurrentHeight();
-                double targetHeight = Elevator_Constants.L1_Bottom_Score;
+                double targetHeight = Elevator_Constants.L2_Middle_Score;
                 double difference = Math.abs(currentHeight - targetHeight);
                 System.out.println("Waiting for elevator, current height: " + currentHeight + ", difference: " + difference);
                 return difference < 0.1;

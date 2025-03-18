@@ -9,12 +9,6 @@
           "data": {
             "pathName": "Right"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Smelevator"
-          }
         }
       ]
     }
