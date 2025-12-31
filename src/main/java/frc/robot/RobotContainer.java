@@ -85,7 +85,7 @@ public class RobotContainer {
 
         //Register commands for autonomous
         registerAutonomousCommands();
-        autoChooser = AutoBuilder.buildAutoChooser("Robot Mid"); // This is where you change our autonomous mode durning competition, techincain will change this depending on strategy
+        autoChooser = AutoBuilder.buildAutoChooser("Robot Mid"); 
         SmartDashboard.putData("Auton Mode", autoChooser);
         
         configureBindings();

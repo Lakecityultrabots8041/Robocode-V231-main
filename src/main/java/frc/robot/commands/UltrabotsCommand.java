@@ -15,17 +15,12 @@ import frc.robot.Constants.*;
  */
 public final class UltrabotsCommand {
 
-    // Private constructor to prevent instantiation
     private UltrabotsCommand() {}
 
     //--------------------------------------------------------------------------
     // AUTONOMOUS COMMAND SEQUENCES
     //--------------------------------------------------------------------------
-    
-    /**
-     * Complete autonomous sequence for scoring at Level 1.
-     * Positions elevator and automatically shoots coral.
-     */
+
     public static Command autonomousL1Score(Elevator_Subsystem elevator, Coral_Subsystem coral) {
         return Commands.sequence(
             // Move elevator to L1 height using existing elevator methods
@@ -120,7 +115,6 @@ public final class UltrabotsCommand {
     public static Command prepareForAlgaeCollection(
             Elevator_Subsystem elevator, 
             Algae_Subsystem algae) {
-        
         return Commands.sequence(
             Commands.runOnce(() -> elevator.setTargetPosition(ElevatorConstants.PROCESSOR_POSITION), elevator),
             new WaitCommand(0.3),
