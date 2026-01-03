@@ -33,7 +33,7 @@ public class AlgaeArm_Constants {
     public static final int JERK = 20;
 
     // **Preset arm positions (units must match your sensor's output)**
-    public static final double ARM_LOWER_POSITION = 0.37;
+    public static final double ARM_LOWER_POSITION = 0.60;
     public static final double ARM_UPPER_POSITION = 2.703;
 
     // arm position for L3 to reach higher algae

@@ -10,11 +10,16 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+//controller rumble test import below
 // ------  SMART DASHBOARD IMPORTS  ------
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
+// Vision imports
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.commands.VISION.AlignToAprilTagCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -120,9 +125,6 @@ public class RobotContainer {
     //private final CA_Intake_cmd ca_intake_command = new CA_Intake_cmd(elevator, coral_arm, algae_arm);
 
 
-
-
-
     //Don't like having to set speed here, but it's the only way to get the command to work
     // Setup for Scoring Commands for Coral and Algae using elevator
 
@@ -138,6 +140,15 @@ public class RobotContainer {
     //private final Command m_complexAuto = newComplexAuto(m_robotDrive, m_hatchSubSystem);
 
    
+    ////--------------------------------------VISION SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
+    // Limelight subsystem for AprilTag detection
+    private final LimelightSubsystem limelight = new LimelightSubsystem();
+    
+    // Vision alignment command - automatically aligns robot with AprilTag 15 for scoring
+    private final AlignToAprilTagCommand alignToTag = new AlignToAprilTagCommand(drivetrain, limelight);
+
+    ////--------------------------------------AUTO SETUP--------------------------------------------------------------------------------------------------------------------------------------------------------------------\\\\
+    
     private final AUTON_CMD testauto; // change this to reflect main AUTON
     //private final AUTON_CMD goleftauto; // use this as a template to define what we want
     //private final AUTON_CMD gorightauto; // use this as a template to define what we want
@@ -147,6 +158,7 @@ public class RobotContainer {
     //private final SendableChooser<Command> autoChooser; // *Path Follower*
     private final SendableChooser<Command> autoChooser; // *Path Follower*
     //private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
 
     public RobotContainer() {
         
@@ -184,6 +196,10 @@ public class RobotContainer {
         return elevator;
     }
 
+    public LimelightSubsystem getLimelight() {
+        return limelight;
+    }
+
 
     
     private void configureBindings() {
@@ -205,8 +221,6 @@ public class RobotContainer {
         //controller.rightTrigger().whileTrue(EjectCommand);
 
 
-
-
         // ---- ALGAE ARM BUTTONS--------\\
         controller.povLeft().onTrue(algaeArmUp);  //--dpad left button to raise Algae Arm
         //controller.leftBumper().and(controller.b()).whileTrue(ALG_L2);
@@ -217,11 +231,20 @@ public class RobotContainer {
     //------------CORAL Configurations------------------------------------------------------------------------------------------------------------------------
         
         //Coral Intake/Outake Buttons\\
-
-
         controller.leftBumper().and(controller.x()).whileTrue(ca_wheelin_cmd);
-
         controller.x().whileTrue(ca_wheelout_cmd);
+
+    //------------VISION ALIGNMENT------------------------------------------------------------------------------------------------------------------------
+        
+        // OPTION 1: Hold START button to align with AprilTag 15
+        // NOTE: This disables the SysId quasistatic bindings below
+        controller.start().whileTrue(alignToTag);
+        
+        // OPTION 2: Use BACK button instead (keeps SysId on START)
+        // controller.back().whileTrue(alignToTag);
+        
+        // OPTION 3: Require two buttons for extra safety during testing
+        // controller.leftBumper().and(controller.start()).whileTrue(alignToTag);
 
     //------------ELEVATOR Button Assignments------------------------------------------------------------------------------------------------------------------------
     
@@ -243,8 +266,11 @@ public class RobotContainer {
          // ---- SYSID / FIELD-CENTRIC BINDINGS ----
         controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         controller.back().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        controller.start().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        
+        // NOTE: These SysId bindings are commented out because START is used for vision alignment
+        // If you want to use these, change the vision binding above to use BACK button instead
+        // controller.start().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
  
 
         // reset the field-centric heading on right bumper press
@@ -260,4 +286,3 @@ public class RobotContainer {
 
      
        }
-
