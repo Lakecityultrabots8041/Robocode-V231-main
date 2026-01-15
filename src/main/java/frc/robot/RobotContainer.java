@@ -208,8 +208,8 @@ public class RobotContainer {
         // ---- DRIVETRAIN BINDINGS -----------------------------------------------------------------------------------------------------------------------------
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-controller.getLeftY() * MaxSpeed / 2.5) // Adjust / 3 to change speed
-                    .withVelocityY(-controller.getLeftX() * MaxSpeed / 2.5) // Adjust / 2 to change speed
+                drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Adjust / 3 to change speed
+                    .withVelocityY(-controller.getLeftX() * MaxSpeed) // Adjust / 2 to change speed
                     .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );

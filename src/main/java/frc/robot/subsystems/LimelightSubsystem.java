@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers; // You need this file! See instructions below.
+import frc.robot.LimelightHelpers; 
 
 /**
  * Subsystem for Limelight 3 camera with MegaTag2 support
@@ -94,7 +94,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // =========================================================================
     
     /**
-     * METHOD 1: TY-based distance (your original method)
+     * METHOD 1: TY-based distance estimation (LESS ACCURATE)
      * Works okay but can be inaccurate at angles
      */
     public double estimateDistanceInches(double targetHeightInches, double cameraHeightInches, double cameraMountAngleDegrees) {
